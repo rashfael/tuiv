@@ -1,0 +1,14 @@
+.DS_Store
+[Tt]humbs.db
+
+~*
+*.log
+*.log.*
+
+.idea/*
+node_modules
+npm-debug.log
+
+build/
+reports/
+dist/

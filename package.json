@@ -1,0 +1,24 @@
+{
+  "name": "schauspiel",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rashfael/schauspiel.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rashfael/schauspiel/issues"
+  },
+  "homepage": "https://github.com/rashfael/schauspiel#readme",
+  "devDependencies": {
+    "vitepress": "^0.12.2"
+  }
+}
