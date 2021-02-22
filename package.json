@@ -1,7 +1,7 @@
 {
   "name": "schauspiel",
   "version": "0.0.1",
-  "description": "",
+  "description": "e2e browser testing based on playwright and folio",
   "main": "index.js",
   "scripts": {
     "docs:dev": "vitepress dev docs",
