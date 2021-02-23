@@ -1,6 +1,19 @@
 const chalk = require('chalk')
 const isEqual = require('lodash/isEqual')
 
+const formatMessage = function (chain, text, {subject, expected, actual}) {
+	const combinedSelector = chain.selectors.join(' ')
+	return chalk.red(
+		chalk.italic(combinedSelector) + ' ' +
+		(subject ? chalk.bold(subject) + ' ' : '') +
+		text +
+		(expected ?
+			'\n\n\t' + chalk.green('Expected: ', chalk.bold(expected)) +
+			'\n\t  ' + chalk.red('Actual: ', chalk.bold(actual))
+			: '')
+	)
+}
+
 module.exports = {
 	equals (chain) {
 
@@ -9,12 +22,20 @@ module.exports = {
 		if (Array.isArray(chain.subjectData)) {
 			return {
 				pass: chain.subjectData.includes(chain.expected), // TODO check soft equality
-				message: chalk`{red {italic ${chain.selector}} {bold ${chain.subject}} does not contain {bold "${chain.expected}"}}\n\n\t{green Expected: {bold ${chain.expected}}}\n\t  {red Actual: {bold ${chain.subjectData}}}`
+				message: formatMessage(chain, chalk`should contain {bold "${chain.expected}"}`, {
+					subject: chain.subject,
+					expected: chain.expected,
+					actual: chain.subjectData
+				})
 			}
 		} else if (typeof chain.subjectData === 'string') {
 			return {
 				pass: chain.subjectData.toLowerCase().includes(chain.expected.toLowerCase()),
-				message: chalk`{red {italic ${chain.selector}} {bold ${chain.subject}} does not contain {bold "${chain.expected}"}}\n\n\t{green Expected: {bold ${chain.expected}}}\n\t  {red Actual: {bold ${chain.subjectData}}}`
+				message: formatMessage(chain, chalk`should contain {bold "${chain.expected}"}`, {
+					subject: chain.subject,
+					expected: chain.expected,
+					actual: chain.subjectData
+				})
 			}
 		} else {
 			return {
@@ -26,13 +47,13 @@ module.exports = {
 	empty (chain) {
 		return {
 			pass: chain.subjectData,
-			message: chalk`{red {italic ${chain.selector}} should ${chain.not ? 'not' : ''} be {bold empty}}`
+			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold empty}}`)
 		}
 	},
 	disabled (chain) {
 		return {
 			pass: chain.subjectData,
-			message: chalk`{red {italic ${chain.selector}} should ${chain.not ? 'not' : ''} be {bold disabled}}`
+			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold disabled}}`)
 		}
 	}
 }
