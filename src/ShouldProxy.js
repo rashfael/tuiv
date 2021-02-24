@@ -90,11 +90,9 @@ const ShouldProxy = function (chain) {
 				lastError = new AssertionError({message: result.message})
 				pass = chain.not ? !pass : pass
 				if (pass) return chain.element ?? chain.subjectData
-				console.log('replaying', chain.replaying)
 				while (!chain.replaying && Date.now() - startTime <= 10000) {
 					// TODO don't burn the CPU, wait a little
 					await promisedImmeditate()
-					console.log('RETRY')
 					try {
 						await ChainingProxy.replay(chain)
 						return chain.element ?? chain.subjectData
