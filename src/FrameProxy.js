@@ -11,16 +11,16 @@ module.exports = function (chain, frame, options = {}) {
 			if (property === 'wait') property = 'waitForTimeout'
 			if (methodsReturningNewElementHandle.includes(property)) {
 				return ChainingProxy(chain, Reflect.get(frame, property, receiver), {
-					apply (elementPromise, thisArg, args) {
+					apply (chain, callTarget, thisArg, args) {
 						chain.selectors.push(args[0])
-						return ElementProxy(chain, Reflect.apply(elementPromise, thisArg, args))
+						return ElementProxy(chain, Reflect.apply(callTarget, thisArg, args))
 					}
 				})
 			}
 			if (property === 'getAll') {
 				// since waitForSelector only returns one element and $$ does not wait, call both
 				return ChainingProxy(chain, Reflect.get(frame, 'waitForSelector', receiver), {
-					apply (elementPromise, thisArg, args) {
+					apply (chain, elementPromise, thisArg, args) {
 						const promise = Reflect.apply(elementPromise, thisArg, args).then(element => {
 							return frame.$$(args[0])
 						})
@@ -31,7 +31,7 @@ module.exports = function (chain, frame, options = {}) {
 			}
 			if (property === 'evaluate') {
 				return ChainingProxy(chain, Reflect.get(frame, property, receiver), {
-					apply (valuePromise, thisArg, args) {
+					apply (chain, valuePromise, thisArg, args) {
 						return ValueProxy(chain, Reflect.apply(valuePromise, thisArg, args))
 					}
 				})

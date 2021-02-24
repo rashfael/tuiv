@@ -16,7 +16,7 @@ const ChainingProxy = function (chain, target, handler = {}, { overrides, frame 
 
 	// always patch in apply to catch all function calls
 	if (!handler.apply) {
-		handler.apply = function (callTarget, thisArg, args) {
+		handler.apply = function (chain, callTarget, thisArg, args) {
 			return Reflect.apply(callTarget, thisArg, args)
 		}
 	}
@@ -38,7 +38,6 @@ ChainingProxy.replay = function (chain) {
 	const FrameProxy = require('./FrameProxy')
 	let target = FrameProxy(null, chain.frames[0], {overrides: {replaying: true}})
 	let prevTarget = null
-	console.log(chain.ops)
 	for (const [key, args] of chain.ops) {
 		if (key === 'get') {
 			// skip mutating actions

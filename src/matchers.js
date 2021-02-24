@@ -17,7 +17,14 @@ const formatMessage = function (chain, text, {subject, expected, actual}) {
 
 module.exports = {
 	equals (chain) {
-
+		return {
+			pass: isEqual(chain.subjectData, chain.expected),
+			message: formatMessage(chain, chalk`should equal {bold "${chain.expected}"}`, {
+				subject: chain.subject,
+				expected: chain.expected,
+				actual: chain.subjectData
+			})
+		}
 	},
 	contains (chain) {
 		if (Array.isArray(chain.subjectData)) {

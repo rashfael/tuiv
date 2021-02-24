@@ -20,7 +20,7 @@ const ElementProxy = function (chain, elementPromise) {
 				// TODO does this chain?
 				// we need to re-proxy, because Promise.prototype.then cannot be called on Proxy
 				return ChainingProxy(chain, Reflect.get(elementPromise, property, receiver), {
-					apply (callTarget, thisArg, argumentsList) {
+					apply (chain, callTarget, thisArg, argumentsList) {
 						return Reflect.apply(callTarget, elementPromise, argumentsList)
 					}
 				})
