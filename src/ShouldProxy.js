@@ -1,3 +1,5 @@
+const { AssertionError } = require('assert')
+
 const ChainingProxy = require('./ChainingProxy')
 const matchers = require('./matchers')
 
@@ -50,7 +52,7 @@ const ShouldProxy = function (chain) {
 			return ShouldProxy(chain)
 		},
 		apply (chain, target, thisArg, args) {
-			const extractSubject = async () => {
+			const extractElementSubject = async () => {
 				const lastFrame = chain.frames[chain.frames.length - 1]
 				switch (chain.subject) {
 					case 'text': return await chain.element.textContent()
@@ -62,31 +64,59 @@ const ShouldProxy = function (chain) {
 
 			if (chain.verb === 'exist' && chain.not) {
 				return chain.elementPromise.then(() => {
-					return Promise.reject(new Error(`${chain.selector} should not exist`))
+					return Promise.reject(new AssertionError({message: `\n${chain.selectors.join(' ')} should not exist`}))
 				}).catch(error => {
 					// silence timeout error
 					if (error.name !== 'TimeoutError') return Promise.reject(error)
 				})
-			} else {
-				const promise = chain.elementPromise.then(async element => {
-					chain.expected = args[0]
-					chain.element = element
-					const startTime = Date.now()
-					let pass, message
-					do {
-						chain.subjectData = await extractSubject()
-						const result = await matchers[chain.verb || 'contains'](chain)
-						pass = result.pass
-						message = result.message
-						pass = chain.not ? !pass : pass
-						if (!pass) await promisedImmeditate()
-					} while (!pass && Date.now() - startTime <= 10000)
-					if (!pass) return Promise.reject(new Error(message))
-					return chain.element
-				})
-				const ElementProxy = require('./ElementProxy')
-				return ElementProxy(chain, promise)
 			}
+
+			const resolve = async () => {
+				if (chain.elementPromise) {
+					chain.element = await chain.elementPromise
+					chain.subjectData = await extractElementSubject()
+				}
+
+				if (chain.valuePromise) {
+					chain.subjectData = await chain.valuePromise
+				}
+
+				chain.expected = args[0]
+				// start timing before element resolves?
+				const startTime = Date.now()
+				let pass, lastError
+				const result = await matchers[chain.verb || 'contains'](chain)
+				pass = result.pass
+				lastError = new AssertionError({message: result.message})
+				pass = chain.not ? !pass : pass
+				if (pass) return chain.element ?? chain.subjectData
+				console.log('replaying', chain.replaying)
+				while (!chain.replaying && Date.now() - startTime <= 10000) {
+					await promisedImmeditate()
+					console.log('RETRY')
+					try {
+						await ChainingProxy.replay(chain)
+						return chain.element ?? chain.subjectData
+					} catch (error) {
+						console.log(error instanceof AssertionError)
+						if (!(error instanceof AssertionError)) throw error
+						lastError = error
+					}
+				}
+				throw lastError
+			}
+
+			let proxy
+			if (chain.elementPromise) {
+				proxy = require('./ElementProxy')
+			} else if (chain.valuePromise) {
+				proxy = require('./ValueProxy')
+			}
+			if (proxy) return proxy(chain, resolve())
+			return resolve()
+
+			// TODO abort if timeout reached but promise retry still running
+			// TODO catch errors while retrying?
 		}
 	})
 }

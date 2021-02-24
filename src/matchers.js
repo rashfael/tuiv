@@ -4,6 +4,7 @@ const isEqual = require('lodash/isEqual')
 const formatMessage = function (chain, text, {subject, expected, actual}) {
 	const combinedSelector = chain.selectors.join(' ')
 	return chalk.red(
+		'\n' +
 		chalk.italic(combinedSelector) + ' ' +
 		(subject ? chalk.bold(subject) + ' ' : '') +
 		text +
@@ -47,13 +48,13 @@ module.exports = {
 	empty (chain) {
 		return {
 			pass: chain.subjectData,
-			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold empty}}`)
+			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold empty}`, {})
 		}
 	},
 	disabled (chain) {
 		return {
 			pass: chain.subjectData,
-			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold disabled}}`)
+			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold disabled}`, {})
 		}
 	}
 }
