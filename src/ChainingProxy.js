@@ -17,7 +17,7 @@ const ChainingProxy = function (chain, target, handler = {}, { overrides, frame 
 	// always patch in apply to catch all function calls
 	if (!handler.apply) {
 		handler.apply = function (chain, callTarget, thisArg, args) {
-			return Reflect.apply(callTarget, thisArg, args)
+			return Reflect.apply(callTarget, thisArg, [chain, ...args])
 		}
 	}
 	const handleWrapper = {}
@@ -41,7 +41,7 @@ ChainingProxy.replay = function (chain) {
 	for (const [key, args] of chain.ops) {
 		if (key === 'get') {
 			// skip mutating actions
-			if (methodsChainingElementHandle.includes[args[1]]) continue
+			if (methodsChainingElementHandle.includes(args[1])) continue
 			prevTarget = target
 			target = Reflect.get(target, args[1], target)
 		} else if (key === 'apply') {

@@ -6,6 +6,7 @@ const formatMessage = function (chain, text, {subject, expected, actual}) {
 	return chalk.red(
 		'\n' +
 		chalk.italic(combinedSelector) + ' ' +
+		(chain.valueSelector ? chalk.bold(chain.valueSelector) + '’ ' : '') +
 		(subject ? chalk.bold(subject) + ' ' : '') +
 		text +
 		(expected ?

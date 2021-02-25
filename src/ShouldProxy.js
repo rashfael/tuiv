@@ -13,7 +13,9 @@ const chainSubjects = [
 	'text',
 	'class',
 	'empty',
-	'disabled'
+	'disabled',
+	'length',
+	'value'
 ]
 
 const chainVerbs = [
@@ -59,7 +61,17 @@ const ShouldProxy = function (chain) {
 					case 'class': return await lastFrame.evaluate(el => Array.from(el.classList), chain.element)
 					case 'empty': return await lastFrame.evaluate(el => el.matches(':empty'), chain.element)
 					case 'disabled': return await lastFrame.evaluate(el => el.matches(':disabled'), chain.element)
+					case 'value': {
+						chain.verb = chain.verb || 'equals'
+						return await chain.element.getAttribute('value')
+					}
 				}
+			}
+
+			const extractValueSubject = async () => {
+				chain.verb = chain.verb || 'equals'
+				if (!chain.subject) return chain.value
+				return chain.value[chain.subject]
 			}
 
 			if (chain.verb === 'exist' && chain.not) {
@@ -76,9 +88,9 @@ const ShouldProxy = function (chain) {
 					chain.element = await chain.elementPromise
 					chain.subjectData = await extractElementSubject()
 				}
-
 				if (chain.valuePromise) {
-					chain.subjectData = await chain.valuePromise
+					chain.value = await chain.valuePromise
+					chain.subjectData = await extractValueSubject()
 				}
 
 				chain.expected = args[0]

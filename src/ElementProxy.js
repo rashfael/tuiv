@@ -1,5 +1,6 @@
 const ChainingProxy = require('./ChainingProxy')
 const ShouldProxy = require('./ShouldProxy')
+const ValueProxy = require('./ValueProxy')
 
 const {
 	methodsReturningNewElementHandle,
@@ -27,22 +28,26 @@ const ElementProxy = function (chain, elementPromise) {
 			}
 			if (property === 'find') property = 'waitForSelector'
 			if (property === 'findAll') {
-				return ChainingProxy(chain, (...args) => {
+				return ChainingProxy(chain, (chain, ...args) => {
+					chain.selectors.push(args[0])
 					const promise = elementPromise.then(async element => {
 						await Reflect.apply(element.waitForSelector, element, args)
 						return Reflect.apply(element.$$, element, args)
 					})
+					return ValueProxy(chain, promise)
+				})
+			}
 					return ElementProxy(chain, promise)
 				})
 			}
 			if (methodsReturningNewElementHandle.includes(property)) {
-				return ChainingProxy(chain, (...args) => {
+				return ChainingProxy(chain, (chain, ...args) => {
 					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, args))
 					return ElementProxy(chain, promise)
 				})
 			}
 			if (methodsChainingElementHandle.includes(property)) {
-				return ChainingProxy(chain, (...args) => {
+				return ChainingProxy(chain, (chain, ...args) => {
 					// chaining elements return null, so just drop result
 					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, element), element, args).then(() => elementPromise))
 					return ElementProxy(chain, promise)
@@ -57,7 +62,7 @@ const ElementProxy = function (chain, elementPromise) {
 			if (methodsReturningNewFrame.includes(property)) {
 				const FrameProxy = require('./FrameProxy')
 				// TODO make chainable
-				return ChainingProxy(chain, () => elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, [])).then(frame => FrameProxy(chain, frame)))
+				return ChainingProxy(chain, (chain) => elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, [])).then(frame => FrameProxy(chain, frame)))
 			}
 
 			return Reflect.get(elementPromise, property, receiver)

@@ -21,18 +21,19 @@ module.exports = function (chain, frame, options = {}) {
 				// since waitForSelector only returns one element and $$ does not wait, call both
 				return ChainingProxy(chain, Reflect.get(frame, 'waitForSelector', receiver), {
 					apply (chain, elementPromise, thisArg, args) {
+						chain.selectors.push(args[0])
 						const promise = Reflect.apply(elementPromise, thisArg, args).then(element => {
 							return frame.$$(args[0])
 						})
 						chain.selectors.push(args[0])
-						return ElementProxy(chain, promise)
+						return ValueProxy(chain, promise)
 					}
 				})
 			}
 			if (property === 'evaluate') {
 				return ChainingProxy(chain, Reflect.get(frame, property, receiver), {
 					apply (chain, valuePromise, thisArg, args) {
-						if (typeof args[0] === 'string') chain.subject = args[0]
+						if (typeof args[0] === 'string') chain.valueSelector = args[0]
 						return ValueProxy(chain, Reflect.apply(valuePromise, thisArg, args))
 					}
 				})
