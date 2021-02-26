@@ -63,7 +63,7 @@ const ShouldProxy = function (chain) {
 					case 'disabled': return await lastFrame.evaluate(el => el.matches(':disabled'), chain.element)
 					case 'value': {
 						chain.verb = chain.verb || 'equals'
-						return await chain.element.getAttribute('value')
+						return await lastFrame.evaluate(el => el.value, chain.element)
 					}
 				}
 			}
