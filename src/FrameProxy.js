@@ -1,6 +1,7 @@
 const ChainingProxy = require('./ChainingProxy')
 const ElementProxy = require('./ElementProxy')
 const ValueProxy = require('./ValueProxy')
+const ElementsProxy = require('./ElementsProxy')
 const { methodsReturningNewElementHandle } = require('./consts')
 
 module.exports = function (chain, frame, options = {}) {
@@ -26,7 +27,7 @@ module.exports = function (chain, frame, options = {}) {
 							return frame.$$(args[0])
 						})
 						chain.selectors.push(args[0])
-						return ValueProxy(chain, promise)
+						return ElementsProxy(chain, promise)
 					}
 				})
 			}

@@ -1,8 +1,8 @@
+const ChainingProxy = require('./ChainingProxy')
+const ShouldProxy = require('./ShouldProxy')
 const {
 	promiseInstanceKeys
 } = require('./consts')
-const ChainingProxy = require('./ChainingProxy')
-const ShouldProxy = require('./ShouldProxy')
 
 module.exports = function (chain, valuePromise) {
 	return ChainingProxy(chain, valuePromise, {
