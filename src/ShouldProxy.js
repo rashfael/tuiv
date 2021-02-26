@@ -86,6 +86,7 @@ const ShouldProxy = function (chain) {
 			const resolve = async () => {
 				if (chain.elementPromise) {
 					chain.element = await chain.elementPromise
+					if (!chain.subject) chain.subject = 'text'
 					chain.subjectData = await extractElementSubject()
 				}
 				if (chain.valuePromise) {
