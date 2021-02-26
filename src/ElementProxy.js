@@ -1,6 +1,6 @@
 const ChainingProxy = require('./ChainingProxy')
 const ShouldProxy = require('./ShouldProxy')
-const ValueProxy = require('./ValueProxy')
+const ElementsProxy = require('./ElementsProxy')
 
 const {
 	methodsReturningNewElementHandle,
@@ -8,6 +8,9 @@ const {
 	methodsReturningNewFrame,
 	promiseInstanceKeys
 } = require('./consts')
+
+const specialCharSplitter = /({.+?})/
+const specialCharFinder = /{(.+?)}/
 
 const ElementProxy = function (chain, elementPromise) {
 	return ChainingProxy(chain, elementPromise, {
@@ -34,9 +37,30 @@ const ElementProxy = function (chain, elementPromise) {
 						await Reflect.apply(element.waitForSelector, element, args)
 						return Reflect.apply(element.$$, element, args)
 					})
-					return ValueProxy(chain, promise)
+					return ElementsProxy(chain, promise)
 				})
 			}
+			if (property === 'clear') {
+				return ChainingProxy(chain, (chain) => {
+					const promise = elementPromise.then(element => element.fill('')).then(() => elementPromise)
+					return ElementProxy(chain, promise)
+				})
+			}
+			if (property === 'type') {
+				return ChainingProxy(chain, (chain, text, options) => {
+					const charChunks = text.split(specialCharSplitter)
+					const promise = elementPromise.then(async element => {
+						for (const chunk of charChunks) {
+							if (chunk === '') continue
+							const found = specialCharFinder.exec(chunk)
+							if (found) {
+								await element.press(found[1], options)
+							} else {
+								await element.type(chunk, options)
+							}
+						}
+						return element
+					})
 					return ElementProxy(chain, promise)
 				})
 			}
@@ -50,12 +74,6 @@ const ElementProxy = function (chain, elementPromise) {
 				return ChainingProxy(chain, (chain, ...args) => {
 					// chaining elements return null, so just drop result
 					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, element), element, args).then(() => elementPromise))
-					return ElementProxy(chain, promise)
-				})
-			}
-			if (property === 'clear') {
-				return ChainingProxy(chain, () => {
-					const promise = elementPromise.then(element => element.fill('')).then(() => elementPromise)
 					return ElementProxy(chain, promise)
 				})
 			}
