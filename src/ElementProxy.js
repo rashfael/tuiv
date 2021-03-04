@@ -1,6 +1,7 @@
 const ChainingProxy = require('./ChainingProxy')
 const ShouldProxy = require('./ShouldProxy')
 const ElementsProxy = require('./ElementsProxy')
+const ValueProxy = require('./ValueProxy')
 
 const {
 	methodsReturningNewElementHandle,
@@ -62,6 +63,12 @@ const ElementProxy = function (chain, elementPromise) {
 						return element
 					})
 					return ElementProxy(chain, promise)
+				})
+			}
+			if (property === 'boundingBox') {
+				return ChainingProxy(chain, (chain, ...args) => {
+					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, args))
+					return ValueProxy(chain, promise)
 				})
 			}
 			if (methodsReturningNewElementHandle.includes(property)) {
