@@ -80,7 +80,28 @@ const ElementProxy = function (chain, elementPromise) {
 			if (methodsChainingElementHandle.includes(property)) {
 				return ChainingProxy(chain, (chain, ...args) => {
 					// chaining elements return null, so just drop result
-					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, element), element, args).then(() => elementPromise))
+					const promise = elementPromise.then(async element => {
+						if (property === 'click') {
+							const posArg = args[0]?.position
+							if (typeof posArg === 'string') {
+								// TODO scroll into view if needed ?
+								// TODO mor positions
+								let pos
+								const box = await element.boundingBox()
+								switch (posArg) {
+									case 'left': pos = {x: 0, y: box.height / 2}; break
+									case 'right': pos = {x: box.width - 1, y: box.height / 2}; break
+								}
+								if (pos) {
+									args[0].position = pos
+								} else {
+									args[0].position = null
+								}
+							}
+						}
+						await Reflect.apply(Reflect.get(element, property, element), element, args)
+						return elementPromise
+					})
 					return ElementProxy(chain, promise)
 				})
 			}
