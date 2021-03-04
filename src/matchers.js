@@ -9,7 +9,7 @@ const formatMessage = function (chain, text, {subject, expected, actual}) {
 		(chain.valueSelector ? chalk.bold(chain.valueSelector) + '’ ' : '') +
 		(subject ? chalk.bold(subject) + ' ' : '') +
 		text +
-		(expected ?
+		(expected !== undefined ?
 			'\n\n\t' + chalk.green('Expected: ', chalk.bold(expected)) +
 			'\n\t  ' + chalk.red('Actual: ', chalk.bold(actual))
 			: '')

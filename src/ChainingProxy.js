@@ -35,8 +35,14 @@ const ChainingProxy = function (chain, target, handler = {}, { overrides, frame 
 }
 
 ChainingProxy.replay = function (chain) {
-	const FrameProxy = require('./FrameProxy')
-	let target = FrameProxy(null, chain.frames[0], {overrides: {replaying: true}})
+	let target
+	if (chain.frames[0]) {
+		const FrameProxy = require('./FrameProxy')
+		target = FrameProxy(null, chain.frames[0], {overrides: {replaying: true}})
+	} else if (chain.jsHandlePromise) {
+		const JsHandleProxy = require('./JsHandleProxy')
+		target = JsHandleProxy(null, chain.jsHandlePromise)
+	}
 	let prevTarget = null
 	for (const [key, args] of chain.ops) {
 		if (key === 'get') {

@@ -33,9 +33,9 @@ module.exports = function (chain, frame, options = {}) {
 			}
 			if (property === 'evaluate') {
 				return ChainingProxy(chain, Reflect.get(frame, property, receiver), {
-					apply (chain, valuePromise, thisArg, args) {
+					apply (chain, valuePromiseFn, thisArg, args) {
 						if (typeof args[0] === 'string') chain.valueSelector = args[0]
-						return ValueProxy(chain, Reflect.apply(valuePromise, thisArg, args))
+						return ValueProxy(chain, Reflect.apply(valuePromiseFn, thisArg, args))
 					}
 				})
 			}

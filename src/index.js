@@ -1,5 +1,6 @@
 const { folio: baseFolio } = require('./playwright-test')
 const FrameProxy = require('./FrameProxy')
+const JsHandleProxy = require('./JsHandleProxy')
 // make promises chainable
 
 const builder = baseFolio.extend()
@@ -13,6 +14,10 @@ const wrapPage = function (page) {
 		return goto.call(this, BASE_URL + url, options)
 	}
 	return FrameProxy(null, page)
+}
+
+const wrapJsHandle = function (jsHandle) {
+	return JsHandleProxy(null, jsHandle)
 }
 
 builder.page.override(async ({ page }, runTest) => {
@@ -46,5 +51,6 @@ module.exports = {
 	beforeAll: folio.beforeAll,
 	afterAll: folio.afterAll,
 	expect: folio.expect,
-	wrapPage
+	wrapPage,
+	wrapJsHandle
 }

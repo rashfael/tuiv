@@ -15,7 +15,8 @@ const chainSubjects = [
 	'empty',
 	'disabled',
 	'length',
-	'value'
+	'value',
+	'keys'
 ]
 
 const chainVerbs = [
@@ -42,7 +43,7 @@ const chainVerbsLookup = chainVerbs.reduce((acc, verb) => {
 	return acc
 }, {})
 
-const ShouldProxy = function (chain) {
+const ShouldProxy = function (chain, options = {}) {
 	// use Function as proxy target to allow arbitrary function calling
 	return ChainingProxy(chain, new Function(), {
 		get (chain, target, property, receiver) {
@@ -71,6 +72,9 @@ const ShouldProxy = function (chain) {
 			const extractValueSubject = async () => {
 				chain.verb = chain.verb || 'equals'
 				if (!chain.subject) return chain.value
+				switch (chain.subject) {
+					case 'keys': return Object.keys(chain.value)
+				}
 				return chain.value[chain.subject]
 			}
 
@@ -91,6 +95,17 @@ const ShouldProxy = function (chain) {
 				}
 				if (chain.valuePromise) {
 					chain.value = await chain.valuePromise
+				}
+
+				if (chain.jsHandlePromise) {
+					chain.jsHandle = await chain.jsHandlePromise
+				}
+
+				if (chain.jsHandle) {
+					chain.value = await chain.jsHandle.evaluate(handle => handle)
+				}
+
+				if (chain.value !== undefined) {
 					chain.subjectData = await extractValueSubject()
 				}
 
@@ -129,7 +144,7 @@ const ShouldProxy = function (chain) {
 			// TODO abort if timeout reached but promise retry still running
 			// TODO catch errors while retrying?
 		}
-	})
+	}, options)
 }
 
 module.exports = ShouldProxy

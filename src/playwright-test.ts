@@ -109,7 +109,6 @@ fixtures.browserType.init(async ({ playwright, browserName }, run) => {
 fixtures.browser.init(async ({ browserType, browserOptions }, run) => {
   const browser = await browserType.launch(browserOptions);
   await run(browser);
-  console.log('close')
   // await browser.close();
 }, { scope: 'worker' });
 
