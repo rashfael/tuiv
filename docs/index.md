@@ -83,3 +83,4 @@ Some long time problems I have while writing cypress tests are in no particular 
 - iframes are complicated™
 - weird `should('have.class', 'myclass')` syntax
 - no window/tab support
+- some function names are… bad (`contains` and `focused` are queries for example, instead of checks, like the naming would suggest)

@@ -64,5 +64,12 @@ module.exports = {
 			pass: chain.subjectData,
 			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} be {bold disabled}`, {})
 		}
+	},
+	haveAttr (chain) {
+		return {
+			pass: chain.subjectData !== null,
+			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} have attribute {bold ${chain.expected}}`, {})
+		}
+	},
 	}
 }

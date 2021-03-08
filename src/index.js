@@ -1,11 +1,16 @@
 const { folio: baseFolio } = require('./playwright-test')
 const FrameProxy = require('./FrameProxy')
+const ValueProxy = require('./ValueProxy')
 const JsHandleProxy = require('./JsHandleProxy')
 // make promises chainable
 
 const builder = baseFolio.extend()
 
 const BASE_URL = 'http://localhost:8880' // 'https://cockpit-stage.ax-semantics.com'
+
+const wrap = function (valuePromise) {
+	return ValueProxy(null, valuePromise)
+}
 
 const wrapPage = function (page) {
 	const goto = page.goto
@@ -51,6 +56,7 @@ module.exports = {
 	beforeAll: folio.beforeAll,
 	afterAll: folio.afterAll,
 	expect: folio.expect,
+	wrap,
 	wrapPage,
 	wrapJsHandle
 }

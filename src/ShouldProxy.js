@@ -16,7 +16,8 @@ const chainSubjects = [
 	'disabled',
 	'length',
 	'value',
-	'keys'
+	'keys',
+	'attr'
 ]
 
 const chainVerbs = [
@@ -66,6 +67,10 @@ const ShouldProxy = function (chain, options = {}) {
 						chain.verb = chain.verb || 'equals'
 						return await lastFrame.evaluate(el => el.value, chain.element)
 					}
+					case 'attr': {
+						chain.verb = chain.verb || 'haveAttr'
+						return await lastFrame.evaluate(({el, attr}) => el.getAttribute(attr), {el: chain.element, attr: chain.expected})
+					}
 				}
 			}
 
@@ -88,7 +93,7 @@ const ShouldProxy = function (chain, options = {}) {
 			}
 
 			const resolve = async () => {
-				if (chain.elementPromise) {
+				chain.expected = args[0]
 					chain.element = await chain.elementPromise
 					if (!chain.subject) chain.subject = 'text'
 					chain.subjectData = await extractElementSubject()
@@ -109,7 +114,6 @@ const ShouldProxy = function (chain, options = {}) {
 					chain.subjectData = await extractValueSubject()
 				}
 
-				chain.expected = args[0]
 				// start timing before element resolves?
 				const startTime = Date.now()
 				let pass, lastError
