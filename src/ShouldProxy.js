@@ -83,17 +83,9 @@ const ShouldProxy = function (chain, options = {}) {
 				return chain.value[chain.subject]
 			}
 
-			if (chain.verb === 'exist' && chain.not) {
-				return chain.elementPromise.then(() => {
-					return Promise.reject(new AssertionError({message: `\n${chain.selectors.join(' ')} should not exist`}))
-				}).catch(error => {
-					// silence timeout error
-					if (error.name !== 'TimeoutError') return Promise.reject(error)
-				})
-			}
-
 			const resolve = async () => {
 				chain.expected = args[0]
+				if (chain.elementPromise && !(chain.verb === 'exist' && chain.not)) {
 					chain.element = await chain.elementPromise
 					if (!chain.subject) chain.subject = 'text'
 					chain.subjectData = await extractElementSubject()

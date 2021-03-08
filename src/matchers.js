@@ -71,5 +71,14 @@ module.exports = {
 			message: formatMessage(chain, chalk`should ${chain.not ? 'not' : ''} have attribute {bold ${chain.expected}}`, {})
 		}
 	},
+	async exist (chain) {
+		if (!chain.not) return {pass: true}
+		try {
+			await chain.elementPromise
+			return {pass: true, message: `${chain.selectors.join(' ')} should not exist`} // TODO better formatting
+		} catch (error) {
+			if (error.name !== 'TimeoutError') throw error
+		}
+		return {pass: false}
 	}
 }
