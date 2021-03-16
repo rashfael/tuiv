@@ -34,7 +34,10 @@ module.exports = function (chain, frame, options = {}) {
 			if (property === 'evaluate') {
 				return ChainingProxy(chain, Reflect.get(frame, property, receiver), {
 					apply (chain, valuePromiseFn, thisArg, args) {
-						if (typeof args[0] === 'string') chain.valueSelector = args[0]
+						if (typeof args[0] === 'string') {
+							chain.valueSelector = args[0]
+							return ValueProxy(chain, (async () => JSON.parse(await frame.evaluate(`JSON.stringify(${args[0]}, ${args[1] ? JSON.stringify(args[1]) : 'null'})`)))())
+						}
 						return ValueProxy(chain, Reflect.apply(valuePromiseFn, thisArg, args))
 					}
 				})
