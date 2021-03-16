@@ -71,6 +71,12 @@ const ElementProxy = function (chain, elementPromise) {
 					return ValueProxy(chain, promise)
 				})
 			}
+			if (property === 'closest') {
+				return ChainingProxy(chain, (chain, ...args) => {
+					const promise = elementPromise.then(element => element.evaluateHandle((el, selector) => el.closest(selector), args[0])).then(handle => handle.asElement())
+					return ElementProxy(chain, promise)
+				})
+			}
 			if (methodsReturningNewElementHandle.includes(property)) {
 				return ChainingProxy(chain, (chain, ...args) => {
 					const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, args))
