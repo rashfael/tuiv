@@ -53,6 +53,26 @@ module.exports = {
 			}
 		}
 	},
+	includes (chain) {
+		// console.log(chain.subjectData)
+		if (Array.isArray(chain.subjectData)) {
+			// TODO
+		} else if (typeof chain.subjectData === 'object') {
+			return {
+				pass: Object.entries(chain.expected).every(([key, value]) => chain.subjectData[key] === value),
+				message: formatMessage(chain, chalk`should include {bold "${chain.expected}"}`, {
+					subject: chain.subject,
+					expected: chain.expected,
+					actual: chain.subjectData
+				})
+			}
+		} else {
+			return {
+				pass: false,
+				message: `unknown subject type ${typeof chain.subjectData}`
+			}
+		}
+	},
 	empty (chain) {
 		return {
 			pass: chain.subjectData,

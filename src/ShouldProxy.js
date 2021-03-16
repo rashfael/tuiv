@@ -23,6 +23,7 @@ const chainSubjects = [
 const chainVerbs = [
 	['equals', 'equal', 'equaling'],
 	['contains', 'contain', 'containing'],
+	['includes', 'include'],
 	['exist', 'exists'],
 	['empty'],
 	['disabled']
