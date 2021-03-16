@@ -29,6 +29,15 @@ const ElementsProxy = function (chain, elementsPromise) {
 				// TODO fail properly if index is not in array
 				return ElementProxy(chain, elementsPromise.then(elements => elements[elements.length - 1]))
 			}
+			if (property === 'forEach') {
+				const ElementProxy = require('./ElementProxy')
+				return ChainingProxy(chain, async (chain, fn) => {
+					const elements = await elementsPromise
+					for (let i = 0; i < elements.length; i++) {
+						await fn(ElementProxy(chain, Promise.resolve(elements[i])), i)
+					}
+				})
+			}
 			if (promiseInstanceKeys.includes(property)) {
 				// TODO does this chain?
 				// we need to re-proxy, because Promise.prototype.then cannot be called on Proxy
