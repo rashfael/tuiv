@@ -1,9 +1,9 @@
 {
-  "name": "schauspiel",
+  "name": "tuiv",
   "version": "0.0.1",
   "description": "e2e browser testing based on playwright and folio",
   "bin": {
-    "schauspiel": "./folio/cli.js"
+    "tuiv": "./folio/cli.js"
   },
   "main": "src/index.js",
   "scripts": {
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rashfael/schauspiel.git"
+    "url": "git+https://github.com/rashfael/tuiv.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rashfael/schauspiel/issues"
+    "url": "https://github.com/rashfael/tuiv/issues"
   },
-  "homepage": "https://github.com/rashfael/schauspiel#readme",
+  "homepage": "https://github.com/rashfael/tuiv#readme",
   "devDependencies": {
     "eslint": "^7.20.0",
     "eslint-config-standard": "^16.0.2",
