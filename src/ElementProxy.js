@@ -71,6 +71,18 @@ const ElementProxy = function (chain, elementPromise) {
 					return ValueProxy(chain, promise)
 				})
 			}
+			// if (property === 'evaluateHandle') {
+			// 	return ChainingProxy(chain, (chain, ...args) => {
+			// 		const promise = elementPromise.then(element => Reflect.apply(Reflect.get(element, property, receiver), element, args))
+			// 	})
+			//
+			// 		Reflect.get(frame, property, receiver), {
+			// 		apply (chain, valuePromiseFn, thisArg, args) {
+			// 			if (typeof args[0] === 'string') chain.valueSelector = args[0]
+			// 			return ValueProxy(chain, Reflect.apply(valuePromiseFn, thisArg, args))
+			// 		}
+			// 	})
+			// }
 			if (property === 'closest') {
 				return ChainingProxy(chain, (chain, ...args) => {
 					const promise = elementPromise.then(element => element.evaluateHandle((el, selector) => el.closest(selector), args[0])).then(handle => handle.asElement())

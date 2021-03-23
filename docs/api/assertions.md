@@ -3,7 +3,7 @@
 Assertions take the form of
 
 ```js
-should.SUBJECT[(SUBJECT_ARG)][.not].VERB[(VERB_ARG)]
+should.SUBJECT[(SUBJECT_ARG)][.not][.VERB][(VERB_ARG)]
 ```
 or in the case of boolean subjects:
 

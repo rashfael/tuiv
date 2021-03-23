@@ -1,6 +1,6 @@
 {
   "name": "tuiv",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "e2e browser testing based on playwright and folio",
   "bin": {
     "tuiv": "./folio/cli.js"
