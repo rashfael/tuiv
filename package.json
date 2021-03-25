@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "folio": "github:rashfael/folio",
-    "playwright": "^1.8.1"
+    "playwright": "^1.10.0"
   }
 }
