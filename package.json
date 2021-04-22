@@ -9,6 +9,9 @@
     "docs:serve": "vitepress serve docs",
     "docs:deploy": "npm run docs:build -s && gh-pages -d docs/.vitepress/dist"
   },
+  "bin": {
+    "tuiv": "./src/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rashfael/tuiv.git"
@@ -30,7 +33,11 @@
     "vitepress": "^0.12.2"
   },
   "dependencies": {
-    "folio": "github:rashfael/folio",
+    "commander": "^6.2.1",
+    "cosmiconfig": "^7.0.0",
+    "globby": "^6.1.0",
+    "joi": "^17.4.0",
+    "lodash": "^4.17.21",
     "playwright": "^1.10.0"
   }
 }
