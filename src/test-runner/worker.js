@@ -1,5 +1,5 @@
 const { rootSuite } = require('./context')
-
+const { serializeError } = require('./util')
 // process.on('disconnect', gracefullyCloseAndExit)
 // process.on('SIGINT', () => {})
 // process.on('SIGTERM', () => {})
@@ -24,7 +24,7 @@ async function gracefullyCloseAndExit () {
 	process.exit(0)
 }
 
-function handleRun ({test}) {
+async function handleRun ({test}) {
 	// console.log('SHOULD RUN', test)
 	rootSuite.loadFile(test.filepath)
 	let suite = rootSuite.files[0]
@@ -34,8 +34,13 @@ function handleRun ({test}) {
 	}
 	const spec = suite.specs[specIdParts.shift()]
 	// console.log(spec)
-	spec.fn()
-	process.send(['testEnd', {status: 'passed'}])
+	try {
+		await spec.fn()
+		process.send(['testEnd', {status: 'passed'}])
+	} catch (error) {
+		process.send(['testEnd', {status: 'failed', error: serializeError(error)}])
+	}
+
 	// process.exit(0)
 }
 

@@ -85,7 +85,7 @@ module.exports = class Runner extends EventEmitter {
 		})
 		supervisor.on('done', () => {
 			this.emit('runEnd', rootSuite)
-			resolveCb()
+			resolveCb(rootSuite)
 		})
 		supervisor.run()
 		return new Promise(resolve => resolveCb = resolve)

@@ -24,7 +24,7 @@ program
 		}
 		await runner.loadFiles()
 		const result = await runner.run()
-		process.exit(result === 'failed' ? 1 : 0)
+		process.exit(result.stats.failed === 0 ? 0 : 1)
 	})
 
 ;(async () => {

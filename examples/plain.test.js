@@ -7,7 +7,8 @@ describe('A plain js test suite', () => {
 	it ('should run this test 2', async () => {
 	})
 
-	it ('should run this test 3', async () => {
+	it ('should fail this test 3', async () => {
+		throw new Error('AN ERROR')
 	})
 
 	it ('should run this test 4', async () => {
