@@ -14,16 +14,16 @@ fixtures.bFixture(async ({}, run) => {
 const { describe, it } = fixtures.build()
 
 describe('A test suite with fixtures', () => {
-	it ('should handle a fixture', async ({aFixture}) => {
+	it('should handle a fixture', async ({aFixture}) => {
 		assert(aFixture === 'a fixture')
 	})
 
-	it ('should handle multiple fixtures', async ({aFixture, bFixture}) => {
+	it('should handle multiple fixtures', async ({aFixture, bFixture}) => {
 		assert(aFixture === 'a fixture')
 		assert(bFixture === 'b fixture')
 	})
 
-	it ('should handle a fixture rename', async ({aFixture: myFixture}) => {
+	it('should handle a fixture rename', async ({aFixture: myFixture}) => {
 		assert(myFixture === 'a fixture')
 	})
 })
