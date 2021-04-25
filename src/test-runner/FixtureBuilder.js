@@ -4,6 +4,7 @@ function getFunctionFixtures (fn) {
 	const expression = parser.parseExpression(fn.toString())
 	const isAsync = expression.async
 	const fixtureParam = expression.params[0]
+	if (!fixtureParam) return []
 	if (fixtureParam.type !== 'ObjectPattern') throw new Error('first argument of function must be an object destructuring pattern')
 	const fixtureProps = fixtureParam.properties.map(prop => prop.key.name)
 	return fixtureProps
