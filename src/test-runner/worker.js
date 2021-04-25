@@ -35,7 +35,7 @@ async function handleRun ({test}) {
 	const spec = suite.specs[specIdParts.shift()]
 	// console.log(spec)
 	try {
-		await spec.fn()
+		await spec.fn(await resolveFixtures(spec))
 		process.send(['testEnd', {status: 'passed'}])
 	} catch (error) {
 		process.send(['testEnd', {status: 'failed', error: serializeError(error)}])
@@ -44,6 +44,16 @@ async function handleRun ({test}) {
 	// process.exit(0)
 }
 
-function runTest(test, spec) {
-
+async function resolveFixtures (spec) {
+	const fixtureObj = {}
+	return Promise.all(spec.fixtures.map(fixture => {
+		return new Promise(resolve => {
+			let teardownCb
+			fixture.fn({}, fixtureInstance => {
+				fixtureObj[fixture.name] = fixtureInstance
+				resolve()
+				return new Promise(resolve => teardownCb = resolve)
+			})
+		})
+	})).then(() => fixtureObj)
 }

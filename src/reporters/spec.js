@@ -27,7 +27,11 @@ module.exports = function SpecReporter (runner, options) {
 
 	const formatError = function (test, error) {
 		const stack = stackUtils.clean(error.stack, 4)
-		const callSite = stackUtils.parseLine(stack.split('\n')[0])
+		let callSite
+		for (const line of stack.split('\n')) {
+			callSite = stackUtils.parseLine(line)
+			if (callSite) break
+		}
 		const sourcecode = fs.readFileSync(test.filepath, 'utf8')
 		console.log()
 		let output = ''

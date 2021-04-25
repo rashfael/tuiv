@@ -1,3 +1,5 @@
+const { FixtureBuilder, getFunctionFixtures } = require('./FixtureBuilder')
+
 function getFreshStats () {
 	return {
 		suites: 0,
@@ -35,10 +37,10 @@ const rootSuite = {
 	}
 }
 
-function Context () {
+function Context (fixtures) {
 	const context = {
 		extend () {
-			return (require('./FixtureBuilder'))(context)
+			return FixtureBuilder(context, fixtures)
 		}
 	}
 	const MODIFIABLES = {
@@ -61,7 +63,13 @@ function Context () {
 			suiteStack[0].specs.push({
 				title,
 				modifiers,
-				fn
+				fn,
+				fixtures: getFunctionFixtures(fn).map(name => {
+					if (!fixtures.has(name)) {
+						throw new Error(`fixture ${name} not defined for spec ${title}`)
+					}
+					return fixtures.get(name)
+				})
 			})
 		}
 	}
