@@ -44,6 +44,7 @@ function Context (fixtures) {
 			return FixtureBuilder(context, fixtures)
 		}
 	}
+
 	const MODIFIABLES = {
 		describe (modifiers, title, fn) {
 			const suite = {
@@ -51,6 +52,7 @@ function Context (fixtures) {
 				modifiers,
 				suites: [],
 				specs: [],
+				hooks: [],
 				stats: getFreshStats()
 			}
 			suiteStack[0].suites.push(suite)
@@ -72,7 +74,26 @@ function Context (fixtures) {
 					return fixtures.get(name)
 				})
 			})
-		}
+		},
+		...(function generateHooks (types) {
+			const hooks = {}
+			for (const type of types) {
+				hooks[type] = function (modifiers, fn) {
+					suiteStack[0].hooks.push({
+						type,
+						modifiers,
+						fn,
+						fixtures: getFunctionFixtures(fn).map(name => {
+							if (!fixtures.has(name)) {
+								throw new Error(`fixture ${name} not defined for hook ${type}`)
+							}
+							return fixtures.get(name)
+						})
+					})
+				}
+			}
+			return hooks
+		})(['beforeAll', 'beforeEach', 'afterAll', 'afterEach'])
 	}
 	const MODIFIERS = ['skip', 'only']
 	for (const [key, fn] of Object.entries(MODIFIABLES)) {

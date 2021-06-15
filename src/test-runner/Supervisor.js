@@ -17,13 +17,16 @@ class WorkerClient extends EventEmitter {
 		this.process.on('message', message => {
 			const [event, ...params] = message
 			if (event === 'testEnd') this.state = 'free'
+			if (['testEnd'].includes(event) && params[0].status === 'failed') {
+
+			}
 			this.emit(event, this.test, ...params)
 		})
 	}
 
 	async init () {
 		this.process.send({ action: 'init', params: { workerIndex: this.index, ...this.runner._config } })
-		await new Promise(f => this.process.once('message', f))
+		await new Promise(resolve => this.process.once('message', resolve))
 	}
 
 	run (test) {
@@ -64,6 +67,10 @@ module.exports = class Supervisor extends EventEmitter {
 				test.result = result
 				this.emit('testEnd', test)
 				if (this._allTestsQueued && this._queue.length === 0) this.emit('done')
+			})
+			worker.on('exit', () => {
+				const index = this._workers.indexOf(worker)
+				if (index > 0) this._workers.splice(index, 1)
 			})
 			return worker
 		} else {
