@@ -8,7 +8,7 @@ const fixtures = context.extend()
 const VIRTUAL_ENV = path.join(__dirname, '../virtual-tests')
 const HEADER = `
 	const { context } = require('${path.join(VIRTUAL_ENV, '../src')}')
-	let { describe, it } = context
+	let { extend, describe, it, beforeAll, beforeEach, afterAll, afterEach } = context
 `
 
 fixtures.runVirtualTests(async ({}, run) => {
