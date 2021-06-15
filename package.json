@@ -7,7 +7,8 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs",
-    "docs:deploy": "npm run docs:build -s && gh-pages -d docs/.vitepress/dist"
+    "docs:deploy": "npm run docs:build -s && gh-pages -d docs/.vitepress/dist",
+    "test": "src/cli.js run tests/*.test.js "
   },
   "bin": {
     "tuiv": "./src/cli.js"
@@ -35,7 +36,7 @@
   "dependencies": {
     "@babel/code-frame": "^7.12.11",
     "@babel/parser": "^7.13.16",
-    "commander": "^6.2.1",
+    "commander": "^7.2.0",
     "cosmiconfig": "^7.0.0",
     "globby": "^6.1.0",
     "joi": "^17.4.0",

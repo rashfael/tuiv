@@ -3,7 +3,11 @@ const path = require('path')
 const globby = require('globby')
 const commander = require('commander')
 const Runner = require('./test-runner/Runner')
-const SpecReporter = require('./reporters/spec')
+
+const reporters = {
+	spec: require('./reporters/spec'),
+	json: require('./reporters/json')
+}
 
 const { loadConfig } = require('./config')
 
@@ -11,16 +15,21 @@ const program = new commander.Command()
 program.version('0.0.1')
 
 program
-	.command('run <tests>')
+	.command('run <tests...>')
 	.description('runs the specified tests')
-	.action(async testsOpt => {
+	.option('--reports-dir <directory>', 'output directory', 'reports')
+	.option('--reporters [reporters]', 'reporters, comma separated', 'spec')
+	.action(async (testsOpt, options, command) => {
 		await loadConfig()
 
 		const paths = (await globby(testsOpt)).map(p => path.resolve(process.cwd(), p))
 
+		const reporterOptions = {
+			outputDir: path.resolve(process.cwd(), options.reportsDir)
+		}
 		const runner = new Runner(paths)
-		for (const reporter of [SpecReporter]) {
-			reporter(runner)
+		for (const reporter of options.reporters.split(',')) {
+			reporters[reporter](runner, reporterOptions)
 		}
 		await runner.loadFiles()
 		const result = await runner.run()
