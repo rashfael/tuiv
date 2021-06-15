@@ -24,10 +24,15 @@ async function gracefullyCloseAndExit () {
 	process.exit(0)
 }
 
+const loadedPaths = {}
+
 async function handleRun ({test}) {
 	// console.log('SHOULD RUN', test)
-	rootSuite.loadFile(test.filepath)
-	let suite = rootSuite.files[0]
+	let suite
+	if (!(suite = loadedPaths[test.filepath])) {
+		suite = rootSuite.loadFile(test.filepath)
+		loadedPaths[test.filepath] = suite
+	}
 	const specIdParts = test.specId.split(':')
 	while (specIdParts.length > 1) {
 		suite = suite.suites[specIdParts.shift()]

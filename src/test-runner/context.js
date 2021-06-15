@@ -27,6 +27,7 @@ const rootSuite = {
 		this.stats.files++
 		suiteStack = [file]
 		require(filepath)
+		return file
 	},
 	incrementStat (type, suites) {
 		if (!suites) suites = suiteStack
