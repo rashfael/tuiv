@@ -16,9 +16,9 @@ class WorkerClient extends EventEmitter {
 		this.process.on('error', e => {})
 		this.process.on('message', message => {
 			const [event, ...params] = message
-			if (event === 'testEnd') this.state = 'free'
+			if (event === 'done') this.state = 'free'
 			if (['testEnd'].includes(event) && params[0].status === 'failed') {
-
+				// kill process?
 			}
 			this.emit(event, this.test, ...params)
 		})
@@ -52,25 +52,61 @@ module.exports = class Supervisor extends EventEmitter {
 	async run () {
 		for (const test of this.executionPlan.tests) {
 			const worker = await this._getFreeWorker()
+			if (test.result) continue // test already got resolved (by failing hooks)
 			this.emit('testStart', test)
 			worker.run(test)
 		}
 		this._allTestsQueued = true
+		if (this._workers.every(w => w.state === 'free')) this.emit('done')
 	}
 
 	async _getFreeWorker () {
 		if (this._workers.length < MAX_WORKERS) {
 			const worker = new WorkerClient()
 			this._workers.push(worker)
+			const markTestWithFailedHook = (test, hook) => {
+				test.result = {
+					status: 'failed',
+					hookFail: hook.type
+				}
+				this.emit('testEnd', test)
+			}
 			worker.on('testEnd', (test, result) => {
-				this._queue.pop()?.(worker) // pass the worker along to someone waiting
 				test.result = result
 				this.emit('testEnd', test)
-				if (this._allTestsQueued && this._queue.length === 0) this.emit('done')
+			})
+			worker.on('hookEnd', (test, hook) => {
+				hook.test = test
+				this.emit('hookEnd', hook)
+				if (hook.status === 'failed') {
+					markTestWithFailedHook(test, hook)
+					if (hook.type.endsWith('All')) {
+						// fail all remaining tests in suite
+						for (const otherTest of this.executionPlan.tests) {
+							// HACK actually check all suites
+							if (!otherTest.result && otherTest.suites.includes(test.suites[0])) {
+								markTestWithFailedHook(otherTest, hook)
+							}
+						}
+						// TODO and subsuites!
+					}
+					// worker should die here after wrapping up hooks
+				}
 			})
 			worker.on('exit', () => {
 				const index = this._workers.indexOf(worker)
-				if (index > 0) this._workers.splice(index, 1)
+				if (index >= 0) this._workers.splice(index, 1)
+				if (this._allTestsQueued && this._queue.length === 0) {
+					this.emit('done')
+				} else {
+					const worker = new WorkerClient()
+					this._workers.push(worker)
+					this._queue.pop()?.(worker)
+				}
+			})
+			worker.on('done', () => {
+				this._queue.pop()?.(worker) // pass the worker along to someone waiting
+				if (this._allTestsQueued && this._queue.length === 0) this.emit('done')
 			})
 			return worker
 		} else {

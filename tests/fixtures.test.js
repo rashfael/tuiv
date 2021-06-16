@@ -34,4 +34,5 @@ describe('Fixtures', () => {
 		})
 		assert(results.exitCode === 0)
 	})
+	// TEARDOWN
 })

@@ -11,7 +11,6 @@ const { serializeError } = require('./util')
 // })
 
 process.on('message', async message => {
-	// console.log(message)
 	const actionHandlers = {
 		run: handleRun
 	}
@@ -21,6 +20,25 @@ process.on('message', async message => {
 })
 
 const loadedPaths = {}
+
+// events should fire in this order:
+// suiteStart
+// hookStart(beforeAll)
+// hookEnd(beforeAll)
+// testStart
+// hookStart(beforeEach)
+// hookEnd(beforeEach)
+// hookStart(afterEach)
+// hookEnd(afterEach)
+// testEnd
+// hookStart(afterAll)
+// hookEnd(afterAll)
+// suiteEnd
+
+// afterEach and afterAll should still run if beforeEach or a test fails
+// only afterAlls on the same level or above should run if beforeAll fails
+// if a beforeEach or afterEach fails, the test should also fail
+// if a beforeAll or afterAll fails, all tests on the same level or below should fail
 
 async function handleRun ({test}) {
 	// console.log('SHOULD RUN', test)
@@ -33,18 +51,27 @@ async function handleRun ({test}) {
 	while (specIdParts.length > 1) {
 		suite = suite.suites[specIdParts.shift()]
 	}
-	const spec = suite.specs[specIdParts.shift()]
-	// console.log(spec)
-	await runHooks(suite, ['beforeAll', 'beforeEach'])
-
-	try {
-		await spec.fn(await resolveFixtures(spec))
-		process.send(['testEnd', {status: 'passed'}])
-	} catch (error) {
-		process.send(['testEnd', {status: 'failed', error: serializeError(error)}])
+	const specIndex = Number(specIdParts.shift())
+	const spec = suite.specs[specIndex]
+	const hookError = await runHooks(suite, ['beforeAll', 'beforeEach'])
+	if (!hookError) {
+		try {
+			await spec.fn(await resolveFixtures(spec))
+			process.send(['testEnd', {status: 'passed'}])
+		} catch (error) {
+			process.send(['testEnd', {status: 'failed', error: serializeError(error)}])
+		}
 	}
-	await runHooks(suite, ['afterAll', 'afterEach'])
-	// process.exit(0)
+	// dont run afterEach when beforeAll failed
+	if (!hookError || hookError.type !== 'beforeAll') {
+		await runHooks(suite, ['afterEach'])
+	}
+	// run afterAll only after last test in suite
+	if (specIndex === suite.specs.length - 1) {
+		await runHooks(suite, ['afterAll'])
+	}
+	// if (hookError) process.exit(0)
+	process.send(['done'])
 }
 
 const finishedGlobalHooks = []
@@ -55,11 +82,12 @@ async function runHooks (suite, hookTypes) {
 		.sort((a, b) => b.type.endsWith('All') - a.type.endsWith('All'))
 	for (const hook of hooks) {
 		try {
-			await hook.fn(await resolveFixtures(hook))
 			if (hook.type.endsWith('All')) finishedGlobalHooks.push(hook)
+			await hook.fn(await resolveFixtures(hook))
 			process.send(['hookEnd', {status: 'passed'}])
 		} catch (error) {
-			process.send(['hookEnd', {status: 'failed', error: serializeError(error)}])
+			process.send(['hookEnd', {type: hook.type, status: 'failed', error: serializeError(error)}])
+			return {error, type: hook.type}
 		}
 	}
 }

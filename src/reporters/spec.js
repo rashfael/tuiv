@@ -1,3 +1,6 @@
+// TODO
+// print hook errors
+
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
@@ -57,7 +60,11 @@ module.exports = function SpecReporter (runner, options) {
 	runner.on('runEnd', rootSuite => {
 		const printFailedTest = function (test) {
 			console.log(chalk` {red ${test.suites.map(getSuiteName).join(` ${symbols.chevronRight} `)} {bold ${test.title}}}`)
-			console.log(formatError(test, test.result.error))
+			if (test.result.error) {
+				console.log(formatError(test, test.result.error))
+			} else if (test.result.hookFail) {
+				console.log(chalk`  {red {bold ${test.result.hookFail}} failed}`)
+			}
 		}
 		console.log()
 		if (rootSuite.stats.failed === 0) {
