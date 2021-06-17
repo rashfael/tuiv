@@ -20,6 +20,7 @@ process.on('message', async message => {
 })
 
 const loadedPaths = {}
+const activeFixtures = new Set()
 
 // events should fire in this order:
 // suiteStart
@@ -70,6 +71,8 @@ async function handleRun ({test}) {
 	if (specIndex === suite.specs.length - 1) {
 		await runHooks(suite, ['afterAll'])
 	}
+	// TODO teardown fixtures for hooks
+	await teardownFixtures()
 	// if (hookError) process.exit(0)
 	process.send(['done'])
 }
@@ -92,16 +95,49 @@ async function runHooks (suite, hookTypes) {
 	}
 }
 
+function buildFixtureSetupOrder (spec) {
+	// cyclicality already checked on context build time
+	const setupOrder = []
+	const visit = function (specOrFixture) {
+		if (setupOrder.includes(specOrFixture)) return
+		(specOrFixture.fixtures || specOrFixture.dependencies).forEach(visit)
+		if (specOrFixture !== spec) setupOrder.push(specOrFixture)
+	}
+	visit(spec)
+	return setupOrder
+}
+
 async function resolveFixtures (spec) {
+	const fixtureSetupOrder = buildFixtureSetupOrder(spec)
 	const fixtureObj = {}
-	return Promise.all(spec.fixtures.map(fixture => {
-		return new Promise(resolve => {
-			let teardownCb
-			fixture.fn({}, fixtureInstance => {
-				fixtureObj[fixture.name] = fixtureInstance
+	for (const fixture of fixtureSetupOrder) {
+		await new Promise((resolve, reject) => {
+			// fixture already instanced
+			if (fixture.instance) {
+				fixtureObj[fixture.name] = fixture.instance
 				resolve()
-				return new Promise(resolve => teardownCb = resolve)
+			}
+			fixture.fnPromise = fixture.fn(fixtureObj, fixtureInstance => {
+				fixture.instance = fixtureInstance
+				fixtureObj[fixture.name] = fixtureInstance
+				activeFixtures.add(fixture)
+				resolve()
+				return new Promise(resolve => fixture.teardownFn = resolve)
+			})
+			fixture.fnPromise.catch(error => {
+				// this should only get forwarded when resolve is not already called by the fixture calling the run function
+				reject(error)
 			})
 		})
-	})).then(() => fixtureObj)
+	}
+	return fixtureObj
+}
+
+async function teardownFixtures () {
+	for (const fixture of activeFixtures) {
+		fixture.teardownFn?.()
+		await fixture.fnPromise
+		fixture.instance = null
+	}
+	activeFixtures.clear()
 }

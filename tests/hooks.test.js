@@ -182,7 +182,6 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		console.log(results.output)
 		assert(results.output.split('BEFORE FAIL').length - 1 === 1)
 		assert(results.output.split('BEFORE EACH').length - 1 === 0)
 		assert(results.output.split('AFTER ALL').length - 1 === 1)
