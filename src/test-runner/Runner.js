@@ -83,6 +83,9 @@ module.exports = class Runner extends EventEmitter {
 			rootSuite.incrementStat(test.result.status, test.suites)
 			this.emit('testEnd', test)
 		})
+		for (const passThroughEvent of ['hookStart', 'hookEnd']) {
+			supervisor.on(passThroughEvent, this.emit.bind(this, passThroughEvent))
+		}
 		supervisor.on('done', () => {
 			this.emit('runEnd', rootSuite)
 			resolveCb(rootSuite)

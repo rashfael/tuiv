@@ -17,7 +17,7 @@ const symbols = {
 
 module.exports = function SpecReporter (runner, options) {
 	let indentLevel = 0
-	const failedTests = []
+	const failures = []
 
 	const indent = function (string, overwriteIndents) {
 		const indents = ' ' + '  '.repeat(overwriteIndents || indentLevel)
@@ -66,11 +66,15 @@ module.exports = function SpecReporter (runner, options) {
 				console.log(chalk`  {red {bold ${test.result.hookFail}} failed}`)
 			}
 		}
+		const printFailedHook = function (hook) {
+			console.log(chalk` {red ${hook.test.suites.map(getSuiteName).join(` ${symbols.chevronRight} `)} ${hook.test.title} ${symbols.chevronRight} {bold ${hook.type}}}`)
+			console.log(formatError(hook.test, hook.error))
+		}
 		console.log()
 		if (rootSuite.stats.failed === 0) {
 			console.log(chalk` {green ${symbols.passed} ${rootSuite.stats.passed} tests passed}`)
 		} else {
-			failedTests.forEach(printFailedTest)
+			failures.forEach(({test, hook}) => test ? printFailedTest(test) : printFailedHook(hook))
 			console.log(chalk`\n {red ${symbols.failed} ${rootSuite.stats.failed} of ${rootSuite.stats.specs} tests failed}`)
 		}
 		console.log()
@@ -89,8 +93,10 @@ module.exports = function SpecReporter (runner, options) {
 
 	})
 
-	runner.on('hookEnd', () => {
-
+	runner.on('hookEnd', (hook) => {
+		if (hook.status === 'failed') {
+			failures.push({hook})
+		}
 	})
 
 	runner.on('testStart', test => {
@@ -101,7 +107,7 @@ module.exports = function SpecReporter (runner, options) {
 		if (test.result.status === 'passed') {
 			console.log(indent(chalk`{green ${symbols.passed}} {gray ${test.title}}`))
 		} else if (test.result.status === 'failed') {
-			failedTests.push(test)
+			failures.push({test})
 			console.log(indent(chalk`{red ${symbols.failed} ${test.title}}`))
 		}
 	})

@@ -116,6 +116,7 @@ async function resolveFixtures (spec) {
 			if (fixture.instance) {
 				fixtureObj[fixture.name] = fixture.instance
 				resolve()
+				return
 			}
 			fixture.fnPromise = fixture.fn(fixtureObj, fixtureInstance => {
 				fixture.instance = fixtureInstance
@@ -135,6 +136,7 @@ async function resolveFixtures (spec) {
 
 async function teardownFixtures () {
 	for (const fixture of activeFixtures) {
+		if (fixture.scope === 'worker') continue
 		fixture.teardownFn?.()
 		await fixture.fnPromise
 		fixture.instance = null
