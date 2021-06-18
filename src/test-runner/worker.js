@@ -56,12 +56,15 @@ async function handleRun ({test}) {
 		loadedPaths[test.filepath] = suite
 	}
 	const specIdParts = test.specId.split(':')
+	const parentSuites = []
 	while (specIdParts.length > 1) {
+		parentSuites.push(suite)
 		suite = suite.suites[specIdParts.shift()]
 	}
+	parentSuites.shift() // remove rootSuite again
 	const specIndex = Number(specIdParts.shift())
 	const spec = suite.specs[specIndex]
-	const hookError = await runHooks(suite, ['beforeAll', 'beforeEach'])
+	const hookError = await runHooks([...parentSuites, suite], ['beforeAll', 'beforeEach'])
 	if (!hookError) {
 		try {
 			await spec.fn(await resolveFixtures(spec))
@@ -72,12 +75,32 @@ async function handleRun ({test}) {
 	}
 	// dont run afterEach when beforeAll failed
 	if (!hookError || hookError.type !== 'beforeAll') {
-		await runHooks(suite, ['afterEach'])
+		await runHooks([suite, ...parentSuites.slice().reverse()], ['afterEach'])
 	}
-	// run afterAll only after last test in suite
-	if (specIndex === suite.specs.length - 1) {
-		await runHooks(suite, ['afterAll'])
+	// find afterAll hooks
+	// assume a suite's own specs are always run before a subsuite's specs
+	// if our suite has other sub suites with specs, no afterAll hooks need to run
+	if (!suite.suites.some(suiteHasSpecs)) {
+		const afterAllSuites = []
+		// run own afterAlls if this test was the last one
+		if (specIndex === suite.specs.length - 1) {
+			afterAllSuites.push(suite)
+		}
+		// run a suite's afterAll hooks if the spec path is the last spec or suite for that suite
+		const suites = parentSuites.slice()
+		const suitePath = test.specId.split(':')
+		suitePath.splice(0, 1) // remove root suite index
+		suitePath.reverse()
+		suitePath.splice(0, 1) // remove spec index
+		for (const idPart of suitePath) {
+			const suite = suites.pop()
+			if (Number(idPart) === suite.suites.length - 1) {
+				afterAllSuites.push(suite)
+			}
+		}
+		await runHooks(afterAllSuites, ['afterAll'])
 	}
+
 	// TODO teardown fixtures for hooks
 	await teardownFixtures()
 	// if (hookError) process.exit(0)
@@ -85,9 +108,11 @@ async function handleRun ({test}) {
 }
 
 const finishedGlobalHooks = []
-async function runHooks (suite, hookTypes) {
+async function runHooks (suites, hookTypes) {
 	// TODO run parent suite hooks
-	const hooks = suite.hooks
+	const hooks = suites
+		.map(suite => suite.hooks)
+		.flat()
 		.filter(hook => hookTypes.includes(hook.type) && !finishedGlobalHooks.includes(hook))
 		.sort((a, b) => b.type.endsWith('All') - a.type.endsWith('All'))
 	for (const hook of hooks) {
@@ -149,4 +174,9 @@ async function teardownFixtures () {
 		fixture.instance = null
 	}
 	activeFixtures.clear()
+}
+
+function suiteHasSpecs (suite) {
+	if (suite.specs.length > 0) return true
+	return suite.suites.some(suiteHasSpecs)
 }

@@ -188,4 +188,52 @@ describe('Hooks', () => {
 		assert.equal(results.output.split('AFTER EACH\n').length - 1, 0)
 		assert.equal(results.exitCode, 1)
 	})
+
+	it('should run only nested hooks', async ({runVirtualTests}) => {
+		const results = await runVirtualTests({
+			'hook.test.js': `
+				describe('outer suite', () => {
+					beforeEach(async ({}) => {
+						console.log('OUTER BEFORE EACH')
+					})
+					beforeAll(async ({}) => {
+						console.log('OUTER BEFORE ALL')
+					})
+					afterAll(async ({}) => {
+						console.log('OUTER AFTER ALL')
+					})
+					afterEach(async ({}) => {
+						console.log('OUTER AFTER EACH')
+					})
+					it ('outer test', async ({}) => {})
+					describe('inner suite', () => {
+						beforeEach(async ({}) => {
+							console.log('INNER BEFORE EACH')
+						})
+						beforeAll(async ({}) => {
+							console.log('INNER BEFORE ALL')
+						})
+						afterAll(async ({}) => {
+							console.log('INNER AFTER ALL')
+						})
+						afterEach(async ({}) => {
+							console.log('INNER AFTER EACH')
+						})
+						it ('inner test', async ({}) => {})
+						it ('inner test 2', async ({}) => {})
+					})
+				})
+			`
+		})
+		assert.equal(results.output.split('OUTER BEFORE ALL\n').length - 1, 1)
+		assert.equal(results.output.split('OUTER BEFORE EACH\n').length - 1, 3)
+		assert.equal(results.output.split('OUTER AFTER ALL\n').length - 1, 1)
+		assert.equal(results.output.split('OUTER AFTER EACH\n').length - 1, 3)
+
+		assert.equal(results.output.split('INNER BEFORE ALL\n').length - 1, 1)
+		assert.equal(results.output.split('INNER BEFORE EACH\n').length - 1, 2)
+		assert.equal(results.output.split('INNER AFTER ALL\n').length - 1, 1)
+		assert.equal(results.output.split('INNER AFTER EACH\n').length - 1, 2)
+		assert.equal(results.exitCode, 0)
+	})
 })
