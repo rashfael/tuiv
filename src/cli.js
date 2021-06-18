@@ -9,7 +9,7 @@ const reporters = {
 	json: require('./reporters/json')
 }
 
-const { loadConfig } = require('./config')
+const { loadConfig, config } = require('./config')
 
 const program = new commander.Command()
 program.version('0.0.1')
@@ -19,6 +19,7 @@ program
 	.description('runs the specified tests')
 	.option('--reports-dir <directory>', 'output directory', 'reports')
 	.option('--reporters [reporters]', 'reporters, comma separated', 'spec')
+	.option('--headful', 'run in headful mode')
 	.action(async (testsOpt, options, command) => {
 		await loadConfig()
 
@@ -26,6 +27,11 @@ program
 
 		const reporterOptions = {
 			outputDir: path.resolve(process.cwd(), options.reportsDir)
+		}
+
+		// set config from cli options
+		if (options.headful) {
+			config.headful = options.headful
 		}
 		const runner = new Runner(paths)
 		for (const reporter of options.reporters.split(',')) {

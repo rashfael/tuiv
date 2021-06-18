@@ -1,3 +1,4 @@
+const { writeConfig } = require('../config')
 const { rootSuite } = require('./context')
 const { serializeError } = require('./util')
 // process.on('disconnect', gracefullyCloseAndExit)
@@ -12,12 +13,18 @@ const { serializeError } = require('./util')
 
 process.on('message', async message => {
 	const actionHandlers = {
+		init: init,
 		run: handleRun
 	}
 	if (actionHandlers[message[0]] !== undefined) {
 		actionHandlers[message[0]](message[1])
 	}
 })
+
+async function init ({config}) {
+	writeConfig(config)
+	process.send(['ready'])
+}
 
 const loadedPaths = {}
 const activeFixtures = new Set()

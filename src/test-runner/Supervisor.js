@@ -1,6 +1,7 @@
 const path = require('path')
 const { EventEmitter } = require('events')
 const { fork } = require('child_process')
+const { config } = require('../config')
 
 const MAX_WORKERS = 1
 
@@ -25,7 +26,7 @@ class WorkerClient extends EventEmitter {
 	}
 
 	async init () {
-		this.process.send({ action: 'init', params: { workerIndex: this.index, ...this.runner._config } })
+		this.process.send(['init', {config}])
 		await new Promise(resolve => this.process.once('message', resolve))
 	}
 
@@ -63,6 +64,7 @@ module.exports = class Supervisor extends EventEmitter {
 	async _getFreeWorker () {
 		if (this._workers.length < MAX_WORKERS) {
 			const worker = new WorkerClient()
+			await worker.init()
 			this._workers.push(worker)
 			const markTestWithFailedHook = (test, hook) => {
 				test.result = {

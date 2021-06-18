@@ -108,6 +108,5 @@ function Context (fixtures) {
 
 module.exports = {
 	rootSuite,
-	Context,
-	rootContext: Context()
+	Context
 }
