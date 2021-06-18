@@ -23,11 +23,11 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('BEFORE EACH')[0].split('BEFORE ALL').length - 1 === 1)
-		assert(results.output.split('BEFORE EACH').length - 1 === 2)
-		assert(results.output.split('AFTER EACH').length - 1 === 2)
-		assert(results.output.split('AFTER EACH')[2].split('AFTER ALL').length - 1 === 1)
-		assert(results.exitCode === 0)
+		assert.equal(results.output.split('BEFORE EACH')[0].split('BEFORE ALL').length - 1, 1)
+		assert.equal(results.output.split('BEFORE EACH').length - 1, 2)
+		assert.equal(results.output.split('AFTER EACH').length - 1, 2)
+		assert.equal(results.output.split('AFTER EACH')[2].split('AFTER ALL').length - 1, 1)
+		assert.equal(results.exitCode, 0)
 	})
 
 	it('should fail test when beforeEach hook fails, but should still run other tests', async ({runVirtualTests}) => {
@@ -48,9 +48,9 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('BEFORE FAIL').length - 1 === 1)
-		assert(results.output.split('BEFORE EACH').length - 1 === 1)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('BEFORE FAIL\n').length - 1, 1)
+		assert.equal(results.output.split('BEFORE EACH\n').length - 1, 1)
+		assert.equal(results.exitCode, 1)
 		assert(results.output.includes('1 of 2 tests failed'))
 		// TODO do this with a json report?
 	})
@@ -73,9 +73,9 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('AFTER FAIL').length - 1 === 1)
-		assert(results.output.split('AFTER EACH').length - 1 === 1)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('AFTER FAIL\n').length - 1, 1)
+		assert.equal(results.output.split('AFTER EACH\n').length - 1, 1)
+		assert.equal(results.exitCode, 1)
 		assert(results.output.includes('1 of 2 tests failed'))
 	})
 
@@ -92,8 +92,8 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('BEFORE FAIL').length - 1 === 1)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('BEFORE FAIL\n').length - 1, 1)
+		assert.equal(results.exitCode, 1)
 		assert(results.output.includes('2 of 2 tests failed'))
 	})
 
@@ -132,9 +132,9 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('AFTER ALL').length - 1 === 1)
-		assert(results.output.split('AFTER EACH').length - 1 === 1)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('AFTER ALL\n').length - 1, 1)
+		assert.equal(results.output.split('AFTER EACH\n').length - 1, 1)
+		assert.equal(results.exitCode, 1)
 	})
 
 	it('should run afterEach and afterAll when beforeEach fails', async ({runVirtualTests}) => {
@@ -155,10 +155,10 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('BEFORE FAIL').length - 1 === 1)
-		assert(results.output.split('AFTER ALL').length - 1 === 1)
-		assert(results.output.split('AFTER EACH').length - 1 === 1)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('BEFORE FAIL\n').length - 1, 1)
+		assert.equal(results.output.split('AFTER ALL\n').length - 1, 1)
+		assert.equal(results.output.split('AFTER EACH\n').length - 1, 1)
+		assert.equal(results.exitCode, 1)
 	})
 
 	it('should run only afterAll when beforeAll fails', async ({runVirtualTests}) => {
@@ -182,10 +182,10 @@ describe('Hooks', () => {
 				})
 			`
 		})
-		assert(results.output.split('BEFORE FAIL').length - 1 === 1)
-		assert(results.output.split('BEFORE EACH').length - 1 === 0)
-		assert(results.output.split('AFTER ALL').length - 1 === 1)
-		assert(results.output.split('AFTER EACH').length - 1 === 0)
-		assert(results.exitCode === 1)
+		assert.equal(results.output.split('BEFORE FAIL\n').length - 1, 1)
+		assert.equal(results.output.split('BEFORE EACH\n').length - 1, 0)
+		assert.equal(results.output.split('AFTER ALL\n').length - 1, 1)
+		assert.equal(results.output.split('AFTER EACH\n').length - 1, 0)
+		assert.equal(results.exitCode, 1)
 	})
 })
