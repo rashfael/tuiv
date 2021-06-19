@@ -5,7 +5,10 @@ const wrap = require('./wrap')
 
 module.exports = function (fixtures) {
 	fixtures.browser(async ({}, run) => {
-		const browser = await chromium.launch({headless: !config.headful})
+		const browser = await chromium.launch({
+			headless: !config.headful,
+			viewport: {width: 1920, height: 1080}
+		})
 		await run(browser)
 		await browser.close()
 	}, {scope: 'browser'})
