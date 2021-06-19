@@ -4,11 +4,14 @@ module.exports = {
 	themeConfig: {
 		nav: [
 			{text: 'Guide', link: '/guide/getting-started', activeMatch: '^/guide/'},
-			{text: 'API', link: '/api/commands', activeMatch: '^/api/'}
+			{text: 'API', link: '/api/commands', activeMatch: '^/api/'},
+			{text: 'Github', link: 'https://github.com/rashfael/tuiv'}
 		],
 		sidebar: {
 			'/guide/': [{
 				text: 'Getting Started', link: '/guide/getting-started',
+			}, {
+				text: 'Feature Overview', link: '/guide/features',
 			}, {
 				text: 'Proxied Promise Chain', link: '/guide/proxied-promise-chain'
 			}, {

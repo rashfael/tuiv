@@ -1,3 +1,4 @@
 docs/
-
+examples/
+tests/
 .eslintrc.js

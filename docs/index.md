@@ -1,14 +1,12 @@
 ---
 home: true
 heroText: tuiv
-tagline: e2e browser testing based on playwright and folio
+tagline: end-to-end browser testing based on playwright
 actionText: Get Started
 actionLink: /guide/getting-started
 ---
 
-# Goals and Design
-
-tuiv enables you to write tests like this:
+# tuiv enables you to write tests like this:
 
 ```js
 describe('checkout', () => {
@@ -25,9 +23,9 @@ describe('checkout', () => {
 
 tuiv aims to:
 
-- provide a chaining syntax based on native async/await
+- provide a chaining command and assertion syntax based on native async/await
 - use modern browser automation for all browsers via [playwright](https://playwright.dev/)
-- auto-retrying everything
-- a fixture based test runner thanks to [folio](https://github.com/microsoft/folio)
+- auto-retry everything
+- be a fixture based test runner
 
 tuiv achieves this with [proxies](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). Lots and lots of proxies.

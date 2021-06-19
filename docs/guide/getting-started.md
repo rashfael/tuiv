@@ -1,36 +1,36 @@
 # Getting Started
 
-## Anatomy of a test suite
+## Installation
 
-This is what a test suite in **tuiv** usually looks like:
+Install tuiv with npm or yarn. This will download and install playwright, which has some [System Requirements](https://playwright.dev/docs/intro/#system-requirements).
 
+```bash
+npm install --save-dev tuiv
+```
+
+## Create your first test
+
+Create a test file (usually in a separate folder for tests).
+
+#### tests/my-first.test.js
 ```js
-describe('checkout', () => {
-	it('should sucessfully checkout', async ({ page }) => {
+const { describe, it } = require('tuiv')
+
+describe('a thing', () => {
+	it('should work', async ({ page }) => {
 		await page.goto('/')
-		await page.get('.some .selector')
-			.click()
-			.type('typing some text')
-			.should.not.have.class('empty')
-		await page.get('.non-existing').should.not.exist()
+		// commands and assertions go here
 	})
 })
 ```
 
-### Test Runner
 
-With `describe` you can define test suites and their lifecycle. You can also nest `describe` calls.
+## Run tests
 
-`it` defines a test with fixtures as paramaters. For more details on `describe`, `it` and other test runner features, have a look at the [Folio Documentation](https://github.com/microsoft/folio).
+tuiv provides a cli, which you can run with `npx`.
 
-### Commands and Assertions
-
-The biggest parts of each of your browser tests are **commands**, controlling what the browser should do, and **assertions**, checking what the browser has done. Both **commands** and **assertions** are accessible via the promise chain and start with the `page` object.
-
-```js
-await page.get('.selector').click().type('text').should.not.have.class('empty')
-          └──────────────────┬─────────────────┘└──────────────┬──────────────┘
-                         commands                          assertion
+```bash
+npx tuiv run tests/*.test.js
 ```
 
-To learn more about the promise chain, read [Proxied Promise Chain](/guide/proxied-promise-chain)
+To learn more about how to test your webapp with tuiv, continue on to [Feature Overview](/guide/features)
