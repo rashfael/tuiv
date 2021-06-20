@@ -1,6 +1,9 @@
 const { writeConfig } = require('../config')
 const { rootSuite } = require('./context')
 const { serializeError } = require('./util')
+
+process.noDeprecation = true // HACK shut up playwright deprecation for now https://github.com/microsoft/playwright/issues/6026
+
 // process.on('disconnect', gracefullyCloseAndExit)
 // process.on('SIGINT', () => {})
 // process.on('SIGTERM', () => {})

@@ -4,6 +4,8 @@ const globby = require('globby')
 const commander = require('commander')
 const Runner = require('./test-runner/Runner')
 
+process.noDeprecation = true // HACK shut up playwright deprecation for now https://github.com/microsoft/playwright/issues/6026
+
 const reporters = {
 	spec: require('./reporters/spec'),
 	json: require('./reporters/json')
