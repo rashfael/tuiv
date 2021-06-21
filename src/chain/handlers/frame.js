@@ -1,14 +1,14 @@
-const config = require('../../config')
+const { config } = require('../../config')
 const { methodsReturningNewElementHandle } = require('../consts')
 const defaultHandler = require('./default')
 
-module.exports = async function (frame, op, index, {chain, meta, assertion}) {
+module.exports = async function (frame, op, {chain, meta, assertion}) {
 	// clone op so we can modify it without breaking replays
 	op = Object.assign({}, op)
 	if (op.get === 'goto' && op.apply) {
 		const url = op.apply.shift()
 		if (url.startsWith('http')) return frame.goto(url, ...op.apply)
-		return frame.goto(this, config.baseUrl + url, ...op.apply)
+		return frame.goto(config.baseUrl + url, ...op.apply)
 	}
 	if (op.get === 'get') op.get = 'waitForSelector'
 	if (op.get === 'wait') op.get = 'waitForTimeout'
@@ -57,5 +57,5 @@ module.exports = async function (frame, op, index, {chain, meta, assertion}) {
 		}
 		// let the default handler handle other cases
 	}
-	return defaultHandler(frame, op, index)
+	return defaultHandler(frame, op)
 }

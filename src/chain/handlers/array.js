@@ -1,6 +1,6 @@
 const defaultHandler = require('./default')
 
-module.exports = async function (array, op, index, {chain, meta, assertion}) {
+module.exports = async function (array, op, {chain, meta, assertion}) {
 	meta.valueSelectors.push(op.get)
 	if (op.get === 'first') {
 		return array[0]
@@ -9,5 +9,5 @@ module.exports = async function (array, op, index, {chain, meta, assertion}) {
 		return array[array.length - 1]
 	}
 
-	return defaultHandler(array, op, index)
+	return defaultHandler(array, op)
 }

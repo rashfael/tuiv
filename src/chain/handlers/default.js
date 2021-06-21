@@ -1,6 +1,6 @@
 // default handler just uses Reflect to get and apply ops
 
-module.exports = function (target, op, index) {
+module.exports = function (target, op) {
 	const thisArg = target
 	if (op.get) {
 		if (!Reflect.has(target, op.get)) {

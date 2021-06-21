@@ -25,5 +25,13 @@ module.exports.methodsReturningNewFrame = [
 	'contentFrame'
 ]
 
+module.exports.assertionExitWords = [
+	...module.exports.methodsReturningNewElementHandle,
+	...module.exports.methodsChainingElementHandle,
+	...module.exports.methodsReturningNewFrame,
+	'find',
+	'findAll'
+]
+
 module.exports.promiseKeys = Reflect.ownKeys(Promise)
 module.exports.promiseInstanceKeys = Reflect.ownKeys(Promise.prototype)

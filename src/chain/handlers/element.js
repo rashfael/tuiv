@@ -7,7 +7,7 @@ const defaultHandler = require('./default')
 const specialCharSplitter = /({.+?})/
 const specialCharFinder = /{(.+?)}/
 
-module.exports = async function (element, op, index, {chain, meta, assertion}) {
+module.exports = async function (element, op, {chain, meta, assertion}) {
 	if (op.get === 'find') op.get = 'waitForSelector'
 	if (op.get === 'findAll' && op.apply) {
 		// since waitForSelector only returns one element and $$ does not wait, call both
@@ -71,5 +71,5 @@ module.exports = async function (element, op, index, {chain, meta, assertion}) {
 		return element
 	}
 
-	return defaultHandler(element, op, index)
+	return defaultHandler(element, op)
 }
