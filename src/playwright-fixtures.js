@@ -6,15 +6,17 @@ const wrap = require('./wrap')
 module.exports = function (fixtures) {
 	fixtures.browser(async ({}, run) => {
 		const browser = await chromium.launch({
-			headless: !config.headful,
-			viewport: {width: 1920, height: 1080}
+			headless: !config.headful
 		})
 		await run(browser)
 		await browser.close()
 	}, {scope: 'browser'})
 
 	fixtures.page(async ({browser}, run) => {
-		const page = await browser.newPage()
+		const context = await browser.newContext({
+			viewport: {width: 1920, height: 1080}
+		})
+		const page = await context.newPage()
 		// page.on('pageerror', exception => {
 		// 	console.log(`Uncaught exception: "${exception}"`)
 		// })
