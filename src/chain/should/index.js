@@ -127,5 +127,5 @@ async function extractValueSubject (value, assertion) {
 	switch (assertion.subject.name) {
 		case 'keys': return Object.keys(value)
 	}
-	return value[assertion.subject]
+	return value[assertion.subject.name]
 }
