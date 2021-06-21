@@ -31,23 +31,34 @@ module.exports = function SpecReporter (runner, options) {
 	const formatError = function (test, error) {
 		const stack = stackUtils.clean(error.stack, 4)
 		let callSite
-		for (const line of stack.split('\n')) {
-			callSite = stackUtils.parseLine(line)
-			if (callSite) break
+		const stackBeforeCallSite = []
+		let lineAtCallSite
+		const stackAfterCallSite = stack.split('\n')
+		while (stackAfterCallSite.length) {
+			lineAtCallSite = stackAfterCallSite.shift()
+			callSite = stackUtils.parseLine(lineAtCallSite)
+			if (callSite && callSite.file === path.relative(process.cwd(), test.filepath)) break
+			stackBeforeCallSite.push(lineAtCallSite)
 		}
 		const sourcecode = fs.readFileSync(test.filepath, 'utf8')
 		console.log()
 		let output = ''
 		output += indent(`${error.name}: ${error.message}\n`, 1)
-		output += '\n' + indent(codeFrameColumns(sourcecode, {
-			start: {
-				line: callSite.line,
-				column: callSite.column
-			}
-		}, {
-			highlightCode: true
-		}), 1) + '\n\n'
-		output += indent(chalk.gray(stack), 1)
+		if (callSite) {
+			output += '\n' + indent(codeFrameColumns(sourcecode, {
+				start: {
+					line: callSite.line,
+					column: callSite.column
+				}
+			}, {
+				highlightCode: true
+			}), 1) + '\n\n'
+		}
+		output += indent(
+			chalk.gray(stackBeforeCallSite.join('\n')) + '\n'
+			+ lineAtCallSite + '\n'
+			+ chalk.gray(stackAfterCallSite.join('\n'))
+			, 1)
 		return output
 	}
 

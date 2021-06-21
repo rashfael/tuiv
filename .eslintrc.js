@@ -15,6 +15,7 @@ module.exports = {
 
 		// OWN RULES
 		indent: [2, 'tab', { SwitchCase: 1 }],
+		'operator-linebreak': [2, 'before', { overrides: { '=': 'after' } }],
 		'no-tabs': 0,
 		'comma-dangle': 0, // perhaps always?
 		curly: 0,

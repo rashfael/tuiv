@@ -10,7 +10,7 @@ describe('tuiv docs', () => {
 		const gettingStartedButton = page.get('"Get Started"')
 		await gettingStartedButton
 			.should.have.attr('href')
-			.equaling('/guide/getting-started.html')
+			.equaling('/guide/getting-started')
 		await gettingStartedButton
 			.click()
 		await page.evaluate('location.href')
