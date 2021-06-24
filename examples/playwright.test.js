@@ -1,4 +1,4 @@
-const { describe, it } = require('../src')
+const { describe, it, wrap } = require('../src')
 
 describe('tuiv docs', () => {
 	it('should exist', async ({ page }) => {
@@ -17,5 +17,6 @@ describe('tuiv docs', () => {
 			.should.equal('https://tuiv.rash.codes/guide/getting-started.html')
 		await page.get('.non-existing')
 			.should.not.exist()
+		await wrap(Promise.resolve({val: 'derp'})).val.should.equal('derp')
 	})
 })

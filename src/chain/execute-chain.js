@@ -61,6 +61,7 @@ module.exports = async function execute (chain, {replaying} = {}) {
 			// we need to look ahead, because assertions might change behaviour of commands
 			const assertion = blocks[index + 1]?.assertion
 			for (const op of block.ops) {
+				intermediate = await intermediate // always resolve promises
 				// skip mutating actions when replaying
 				if (replaying && methodsChainingElementHandle.includes(op.get)) continue
 				const handler = resolveHandler(intermediate)
