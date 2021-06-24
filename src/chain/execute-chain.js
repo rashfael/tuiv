@@ -69,6 +69,7 @@ module.exports = async function execute (chain, {replaying} = {}) {
 			}
 		}
 		if (block.type === 'assertion') {
+			intermediate = await intermediate // always resolve promises
 			let lastError = await executeAssertion(intermediate, block.assertion, chain, meta)
 
 			// eslint-disable-next-line no-unmodified-loop-condition

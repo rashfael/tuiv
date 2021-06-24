@@ -75,6 +75,8 @@ module.exports.executeAssertion = async function (target, assertion, chain, meta
 				if (!assertion.subject) assertion.subject = {name: 'text'}
 				assertion.subject.data = await extractElementSubject(target, assertion)
 				break
+			case 'jshandle':
+				target = await target.jsonValue() /* eslint-disable-line no-fallthrough */
 			default: {
 				const data = await extractValueSubject(target, assertion)
 				if (assertion.subject) {
