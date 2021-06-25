@@ -24,18 +24,18 @@ module.exports = {
 			message: formatMessage(chalk`should equal {bold "${expected}"}`)
 		}
 	},
-	contains ({subject: {data}, expected: [expected]}, meta) {
+	contains ({subject: {data}, expected: [expected], not}, meta) {
 		if (Array.isArray(data)) {
 			return {
 				pass: data.includes(expected), // TODO check soft equality
-				message: formatMessage(chalk`should contain {bold "${expected}"}`)
+				message: formatMessage(chalk`should ${not ? 'not' : ''} contain {bold "${expected}"}`)
 			}
 		} else if (typeof data === 'string') {
 			return {
 				pass: data
 					.toLowerCase()
 					.includes(expected.toLowerCase()),
-				message: formatMessage(chalk`should contain {bold "${expected}"}`)
+				message: formatMessage(chalk`should ${not ? 'not' : ''} contain {bold "${expected}"}`)
 			}
 		} else {
 			return {
@@ -44,14 +44,14 @@ module.exports = {
 			}
 		}
 	},
-	includes ({subject: {data}, expected: [expected]}, meta) {
+	includes ({subject: {data}, expected: [expected], not}, meta) {
 		// console.log(chain.subjectData)
 		if (Array.isArray(data)) {
 			// TODO
 		} else if (typeof data === 'object') {
 			return {
 				pass: Object.entries(expected).every(([key, value]) => data[key] === value),
-				message: formatMessage(chalk`should include {bold "${expected}"}`)
+				message: formatMessage(chalk`should ${not ? 'not' : ''} include {bold "${expected}"}`)
 			}
 		} else {
 			return {

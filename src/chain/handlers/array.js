@@ -1,6 +1,6 @@
 const defaultHandler = require('./default')
 const ChainingProxy = require('../ChainingProxy')
-module.exports = async function (array, op, {chain, meta, assertion}) {
+module.exports = async function (array, op, index, {chain, meta, assertion}) {
 	meta.valueSelectors.push(op.get)
 	if (op.get === 'first') {
 		return array[0]

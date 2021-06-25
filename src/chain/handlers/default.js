@@ -3,6 +3,10 @@
 module.exports = function (target, op) {
 	const thisArg = target
 	if (op.get) {
+		
+		if (target === undefined || target === null) {
+			throw new Error('target is null or undefined')
+		}
 		if (!Reflect.has(target, op.get)) {
 			throw new Error(`target has no attribute "${op.get}"`)
 		}

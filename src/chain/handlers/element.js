@@ -3,11 +3,12 @@ const {
 	methodsChainingElementHandle
 } = require('../consts')
 const defaultHandler = require('./default')
+const { handleExistAssertWithPlaywright } = require('./utils')
 
 const specialCharSplitter = /({.+?})/
 const specialCharFinder = /{(.+?)}/
 
-module.exports = async function (element, op, {chain, meta, assertion}) {
+module.exports = async function (element, op, index, {chain, block, meta, assertion}) {
 	if (op.get === 'find') op.get = 'waitForSelector'
 	if (op.get === 'findAll' && op.apply) {
 		// since waitForSelector only returns one element and $$ does not wait, call both
@@ -45,7 +46,7 @@ module.exports = async function (element, op, {chain, meta, assertion}) {
 		// record selector, let default handler do the rest
 		meta.selectors.push(op.apply[0])
 	}
-
+	if (await handleExistAssertWithPlaywright(element, op, index, {block, assertion})) return
 	if (methodsChainingElementHandle.includes(op.get) && op.apply) {
 		if (op.get === 'click') {
 			// support named positions
