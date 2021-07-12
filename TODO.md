@@ -10,6 +10,8 @@
 
 - hook naming https://mochajs.org/#describing-hooks
 
+- handle cli termination
+
 # features
 retries asserts
 
