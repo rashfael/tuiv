@@ -1,4 +1,4 @@
-const { writeConfig } = require('../config')
+const { config, writeConfig } = require('../config')
 const { rootSuite } = require('./context')
 const { serializeError } = require('./util')
 
@@ -68,11 +68,13 @@ async function handleRun ({test}) {
 	const specIndex = Number(specIdParts.shift())
 	const spec = suite.specs[specIndex]
 	const hookError = await runHooks([...parentSuites, suite], ['beforeAll', 'beforeEach'])
+	let testError
 	if (!hookError) {
 		try {
 			await spec.fn(await resolveFixtures(spec))
 			process.send(['testEnd', {status: 'passed'}])
 		} catch (error) {
+			testError = error
 			process.send(['testEnd', {status: 'failed', error: serializeError(error)}])
 		}
 	}
@@ -104,8 +106,10 @@ async function handleRun ({test}) {
 		await runHooks(afterAllSuites, ['afterAll'])
 	}
 
-	// TODO teardown fixtures for hooks
-	await teardownFixtures()
+	if (!(config.pauseOnError && (testError || hookError))) {
+		await teardownFixtures()
+	}
+
 	// if (hookError) process.exit(0)
 	process.send(['done'])
 }

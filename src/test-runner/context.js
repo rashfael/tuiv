@@ -42,7 +42,8 @@ function Context (fixtures) {
 	const context = {
 		extend () {
 			return FixtureBuilder(context, fixtures)
-		}
+		},
+		wrap: require('../wrap') // expose wrap for easy access
 	}
 
 	const MODIFIABLES = {

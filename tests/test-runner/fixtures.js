@@ -1,11 +1,11 @@
 const path = require('path')
 const fs = require('fs/promises')
 const { spawn } = require('child_process')
-const { context } = require('../src')
+const { context } = require('../../src')
 
 const fixtures = context.extend()
 
-const VIRTUAL_ENV = path.join(__dirname, '../virtual-tests')
+const VIRTUAL_ENV = path.join(__dirname, '../../virtual-tests')
 const HEADER = `
 	const assert = require('assert')
 	const { context } = require('${path.join(VIRTUAL_ENV, '../src')}')
@@ -21,7 +21,7 @@ fixtures.runVirtualTests(async ({}, run) => {
 			await fs.writeFile(testpath, HEADER + content)
 		}
 		const tuivProcess = spawn('node', [
-			path.join(__dirname, '../src/cli.js'),
+			path.join(__dirname, '../../src/cli.js'),
 			'run',
 			`${VIRTUAL_ENV}/**/*.test.js`
 		], {

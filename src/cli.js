@@ -21,7 +21,9 @@ program
 	.description('runs the specified tests')
 	.option('--reports-dir <directory>', 'output directory', 'reports')
 	.option('--reporters [reporters]', 'reporters, comma separated', 'spec')
-	.option('--headful', 'run in headful mode')
+	.option('-f, --headful', 'run in headful mode')
+	.option('-p, --pause-on-error', 'pause on error, leaves the headful browser open')
+	.option('-x, --exit-on-error', 'exits after encountering an error')
 	.action(async (testsOpt, options, command) => {
 		await loadConfig()
 
@@ -32,8 +34,10 @@ program
 		}
 
 		// set config from cli options
-		if (options.headful) {
-			config.headful = options.headful
+		for (const option of ['headful', 'pauseOnError', 'exitOnError']) {
+			if (options[option]) {
+				config[option] = options[option]
+			}
 		}
 		const runner = new Runner(paths)
 		for (const reporter of options.reporters.split(',')) {
