@@ -27,6 +27,8 @@ const generateExecutionPlan = function () {
 	const suiteStack = []
 	const fillFromSuite = function (suite) {
 		for (const spec of suite.specs || []) {
+			if (spec.modifiers?.includes('skip')) continue
+			if (spec.modifiers?.includes('only')) plan.tests = []
 			// TODO cleanup recursive stuff and fn
 			const suites = suiteStack.slice().reverse()
 			plan.tests.push({
@@ -35,11 +37,15 @@ const generateExecutionPlan = function () {
 				filepath: suites[0].filepath,
 				suites
 			})
+			if (spec.modifiers?.includes('only')) return true
 		}
 		for (const subsuite of suite.suites || suite.files || []) {
+			if (subsuite.modifiers?.includes('skip')) continue
+			if (subsuite.modifiers?.includes('only')) plan.tests = []
 			suiteStack.unshift(subsuite)
-			fillFromSuite(subsuite)
+			if (fillFromSuite(subsuite)) return
 			suiteStack.shift(subsuite)
+			if (subsuite.modifiers?.includes('only')) return true
 		}
 	}
 
@@ -62,6 +68,7 @@ module.exports = class Runner extends EventEmitter {
 
 	async run () {
 		let resolveCb
+		const returnPromise = new Promise(resolve => resolveCb = resolve)
 		this.emit('runStart', rootSuite)
 		const executionPlan = generateExecutionPlan()
 		// console.log('EXECUTION PLAN:', executionPlan)
@@ -91,6 +98,6 @@ module.exports = class Runner extends EventEmitter {
 			resolveCb(rootSuite)
 		})
 		supervisor.run()
-		return new Promise(resolve => resolveCb = resolve)
+		return returnPromise
 	}
 }
