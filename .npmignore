@@ -1,4 +1,5 @@
 docs/
 examples/
 tests/
+virtual-tests/
 .eslintrc.js
