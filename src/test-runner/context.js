@@ -17,6 +17,14 @@ const rootSuite = {
 		files: 0,
 		...getFreshStats()
 	},
+	reset () {
+		// we need to reset the rootSuite when running multiple times without ending the process
+		rootSuite.files = []
+		rootSuite.stats = {
+			files: 0,
+			...getFreshStats()
+		}
+	},
 	loadFile (filepath) {
 		const file = {
 			filepath,

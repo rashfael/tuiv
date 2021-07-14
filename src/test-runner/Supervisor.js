@@ -33,7 +33,12 @@ class WorkerClient extends EventEmitter {
 	run (test) {
 		this.state = 'running'
 		this.test = test
-		this.process.send(['run', {test}])
+		this.process.send(['run', {
+			test: {
+				filepath: test.filepath,
+				specId: test.specId
+			}
+		}])
 	}
 
 	stop () {

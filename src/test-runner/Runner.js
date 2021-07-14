@@ -1,3 +1,4 @@
+const path = require('path')
 const { EventEmitter } = require('events')
 const difference = require('lodash/difference')
 const { rootSuite } = require('./context')
@@ -20,7 +21,7 @@ const getSpecId = function (suites, spec) {
 // super simple plan, just run all test specs in all suites in a flat list, no deps for now
 // in the future, build execution blocks to optimize shared fixtures
 // support exclusive test suites
-const generateExecutionPlan = function () {
+function generateExecutionPlan () {
 	const plan = {
 		tests: []
 	}
@@ -31,12 +32,14 @@ const generateExecutionPlan = function () {
 			if (spec.modifiers?.includes('only')) plan.tests = []
 			// TODO cleanup recursive stuff and fn
 			const suites = suiteStack.slice().reverse()
-			plan.tests.push({
+			const test = {
 				specId: getSpecId(suites, spec),
 				title: spec.title,
 				filepath: suites[0].filepath,
 				suites
-			})
+			}
+			plan.tests.push(test)
+			spec.test = test // backlink to spec for report generation
 			if (spec.modifiers?.includes('only')) return true
 		}
 		for (const subsuite of suite.suites || suite.files || []) {
@@ -54,6 +57,40 @@ const generateExecutionPlan = function () {
 	return plan
 }
 
+function generateReport (rootSuite) {
+	// generate report
+	const report = {
+		stats: rootSuite.stats,
+		files: []
+	}
+	const traverseSuite = function (suite) {
+		const suiteReport = {
+			title: suite.title,
+			stats: suite.stats,
+			modifiers: suite.modifiers,
+			suites: [],
+			specs: []
+		}
+		for (const spec of suite.specs || []) {
+			suiteReport.specs.push({
+				title: spec.title,
+				modifiers: spec.modifiers,
+				result: spec.test?.result
+			})
+		}
+		for (const subsuite of suite.suites || []) {
+			suiteReport.suites.push(traverseSuite(subsuite))
+		}
+		return suiteReport
+	}
+	for (const file of rootSuite.files) {
+		const fileReport = traverseSuite(file)
+		fileReport.filepath = path.relative(process.cwd(), file.filepath)
+		report.files.push(fileReport)
+	}
+	return report
+}
+
 module.exports = class Runner extends EventEmitter {
 	constructor (testFilePaths) {
 		super()
@@ -69,6 +106,7 @@ module.exports = class Runner extends EventEmitter {
 	async run () {
 		let resolveCb
 		const returnPromise = new Promise(resolve => resolveCb = resolve)
+		const startedAt = Date.now()
 		this.emit('runStart', rootSuite)
 		const executionPlan = generateExecutionPlan()
 		// console.log('EXECUTION PLAN:', executionPlan)
@@ -95,7 +133,10 @@ module.exports = class Runner extends EventEmitter {
 		}
 		supervisor.on('done', () => {
 			this.emit('runEnd', rootSuite)
-			resolveCb(rootSuite)
+			const report = generateReport(rootSuite)
+			report.startedAt = startedAt
+			report.endedAt = Date.now()
+			resolveCb(report)
 		})
 		supervisor.run()
 		return returnPromise
