@@ -10,13 +10,22 @@ module.exports = function (fixtures) {
 		})
 		await run(browser)
 		await browser.close()
-	}, {scope: 'browser'})
+	}, {scope: 'worker'})
 
-	fixtures.page(async ({browser}, run) => {
-		const context = await browser.newContext({
-			viewport: {width: 1920, height: 1080}
+	fixtures.newPage(async ({browser}, run) => {
+		await run(async function () {
+			const context = await browser.newContext({
+				viewport: {width: 1920, height: 1080}
+			})
+			const page = await context.newPage()
+			for (const blockedGlob of config.blocklist || []) {
+				page.route(blockedGlob, route => route.abort())
+			}
+			return page
 		})
-		const page = await context.newPage()
+	}, {scope: 'worker'})
+
+	fixtures.page(async ({newPage}, run) => {
 		// page.on('pageerror', exception => {
 		// 	console.log(`Uncaught exception: "${exception}"`)
 		// })
@@ -30,6 +39,8 @@ module.exports = function (fixtures) {
 		// 	if (frame !== page.mainFrame()) return
 		// 	console.log('NAV', frame.url())
 		// })
+		const page = await newPage()
 		await run(wrap(page))
+		await page.close()
 	})
 }
