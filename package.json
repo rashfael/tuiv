@@ -8,7 +8,7 @@
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs",
     "docs:deploy": "npm run docs:build -s && gh-pages -d docs/.vitepress/dist",
-    "test": "src/cli.js run tests/*.test.js "
+    "test": "src/cli.js run tests/**/*.test.js "
   },
   "bin": {
     "tuiv": "./src/cli.js"
