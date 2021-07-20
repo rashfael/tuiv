@@ -110,9 +110,9 @@ module.exports = class Runner extends EventEmitter {
 		this.emit('runStart', rootSuite)
 		const executionPlan = generateExecutionPlan()
 		// console.log('EXECUTION PLAN:', executionPlan)
-		const supervisor = new Supervisor(executionPlan)
+		this.supervisor = new Supervisor(executionPlan)
 		let runningTest
-		supervisor.on('testStart', test => {
+		this.supervisor.on('testStart', test => {
 			const exitingSuites = difference(runningTest?.suites, test.suites)
 			const enteringSuites = difference(test.suites, runningTest?.suites)
 			for (const suite of exitingSuites) {
@@ -124,21 +124,21 @@ module.exports = class Runner extends EventEmitter {
 			this.emit('testStart', test)
 			runningTest = test
 		})
-		supervisor.on('testEnd', test => {
+		this.supervisor.on('testEnd', test => {
 			rootSuite.incrementStat(test.result.status, test.suites)
 			this.emit('testEnd', test)
 		})
 		for (const passThroughEvent of ['hookStart', 'hookEnd']) {
-			supervisor.on(passThroughEvent, this.emit.bind(this, passThroughEvent))
+			this.supervisor.on(passThroughEvent, this.emit.bind(this, passThroughEvent))
 		}
-		supervisor.on('done', () => {
+		this.supervisor.on('done', () => {
 			this.emit('runEnd', rootSuite)
 			const report = generateReport(rootSuite)
 			report.startedAt = startedAt
 			report.endedAt = Date.now()
 			resolveCb(report)
 		})
-		supervisor.run()
+		this.supervisor.run()
 		return returnPromise
 	}
 }

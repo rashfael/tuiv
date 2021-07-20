@@ -17,7 +17,8 @@ process.noDeprecation = true // HACK shut up playwright deprecation for now http
 process.on('message', async message => {
 	const actionHandlers = {
 		init: init,
-		run: handleRun
+		run: handleRun,
+		destroy: handleWorkerDestroy
 	}
 	if (actionHandlers[message[0]] !== undefined) {
 		actionHandlers[message[0]](message[1])
@@ -134,6 +135,12 @@ async function runHooks (suites, hookTypes) {
 	}
 }
 
+async function handleWorkerDestroy () {
+	await teardownFixtures()
+	await teardownFixtures('worker')
+	process.exit()
+}
+
 function buildFixtureSetupOrder (spec) {
 	// cyclicality already checked on context build time
 	const setupOrder = []
@@ -173,14 +180,14 @@ async function resolveFixtures (spec) {
 	return fixtureObj
 }
 
-async function teardownFixtures () {
+async function teardownFixtures (scope) {
 	for (const fixture of activeFixtures) {
-		if (fixture.scope === 'worker') continue
+		if (fixture.scope === 'worker' && scope !== 'worker') continue
 		fixture.teardownFn?.()
 		await fixture.fnPromise
 		fixture.instance = null
+		activeFixtures.delete(fixture)
 	}
-	activeFixtures.clear()
 }
 
 function suiteHasSpecs (suite) {

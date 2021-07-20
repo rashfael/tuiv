@@ -89,6 +89,34 @@ describe('Fixtures', () => {
 		assert.equal(results.exitCode, 0)
 	})
 
+	it('should teardown worker fixture', async ({runVirtualTests}) => {
+		const results = await runVirtualTests({
+			'a.test.js': `
+				const _fixture = {
+					teardownCount: 0
+				}
+				const fixtures = extend()
+				fixtures.aFixture(async ({}, run) => {
+					await run(_fixture)
+					_fixture.teardownCount++
+					console.log('TEARDOWN')
+				}, {scope: 'worker'})
+
+				;({ describe, it } = fixtures.build())
+
+				describe('A test suite with fixtures', () => {
+					it('test1', async ({aFixture}) => {
+					})
+					it('test2', async ({aFixture}) => {
+						assert.equal(aFixture.teardownCount, 0)
+					})
+				})
+			`
+		})
+		assert.equal(results.exitCode, 0)
+		assert(results.output.includes('TEARDOWN'))
+	})
+
 	it('should run with dependent fixtures', async ({runVirtualTests}) => {
 		const results = await runVirtualTests({
 			'a.test.js': `

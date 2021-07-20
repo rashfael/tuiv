@@ -23,5 +23,8 @@ module.exports = async function (testsPath, options) {
 		reporters[reporter](runner, reporterOptions)
 	}
 	await runner.loadFiles()
+	process.on('SIGINT', () => {
+		runner.supervisor.doneAndCleanup()
+	})
 	return await runner.run()
 }

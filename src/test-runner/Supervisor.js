@@ -13,7 +13,11 @@ class WorkerClient extends EventEmitter {
 			env: process.env,
 			// stdio: ['inherit', 'inherit', 'inherit', 'ipc']
 		})
-		this.process.on('exit', () => this.emit('exit'))
+		this.process.on('exit', () => {
+			if (this.state !== 'destroying') {
+				this.emit('exit')
+			}
+		})
 		this.process.on('error', e => {})
 		this.process.on('message', message => {
 			const [event, ...params] = message
@@ -41,8 +45,13 @@ class WorkerClient extends EventEmitter {
 		}])
 	}
 
-	stop () {
-		this.process.send({ action: 'stop' })
+	destroy () {
+		this.state = 'destroying'
+		let resolveCb
+		const promise = new Promise(resolve => resolveCb = resolve)
+		this.process.on('exit', resolveCb)
+		this.process.send(['destroy'])
+		return promise
 	}
 }
 
@@ -53,6 +62,7 @@ module.exports = class Supervisor extends EventEmitter {
 		this._workers = []
 		this._queue = []
 		this._allTestsQueued = false
+		this._cleanup = false
 	}
 
 	async run () {
@@ -63,7 +73,7 @@ module.exports = class Supervisor extends EventEmitter {
 			worker.run(test)
 		}
 		this._allTestsQueued = true
-		if (this._workers.every(w => w.state === 'free')) this.emit('done')
+		if (this._workers.every(w => w.state === 'free')) this.doneAndCleanup()
 	}
 
 	async _getFreeWorker () {
@@ -104,7 +114,7 @@ module.exports = class Supervisor extends EventEmitter {
 				const index = this._workers.indexOf(worker)
 				if (index >= 0) this._workers.splice(index, 1)
 				if (this._allTestsQueued && this._queue.length === 0) {
-					this.emit('done')
+					this.doneAndCleanup()
 				} else {
 					const worker = new WorkerClient()
 					this._workers.push(worker)
@@ -113,7 +123,7 @@ module.exports = class Supervisor extends EventEmitter {
 			})
 			worker.on('done', () => {
 				this._queue.pop()?.(worker) // pass the worker along to someone waiting
-				if (this._allTestsQueued && this._queue.length === 0) this.emit('done')
+				if (this._allTestsQueued && this._queue.length === 0) this.doneAndCleanup()
 			})
 			return worker
 		} else {
@@ -121,5 +131,14 @@ module.exports = class Supervisor extends EventEmitter {
 			if (worker) return worker
 			return new Promise(resolve => this._queue.push(resolve))
 		}
+	}
+
+	async doneAndCleanup () {
+		if (this._cleanup) return
+		this._cleanup = true
+		for (const worker of this._workers) {
+			await worker.destroy()
+		}
+		this.emit('done')
 	}
 }
