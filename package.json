@@ -1,6 +1,6 @@
 {
   "name": "tuiv",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "e2e browser testing based on playwright and folio",
   "main": "src/index.js",
   "scripts": {
