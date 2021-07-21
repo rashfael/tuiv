@@ -11,7 +11,6 @@ const chainNops = [
 const chainSubjects = [
 	'text',
 	'class',
-	'empty',
 	'disabled',
 	'length',
 	'value',
