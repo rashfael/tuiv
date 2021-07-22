@@ -62,7 +62,7 @@ module.exports = {
 	},
 	empty ({subject: {data}, expected: [expected], not}, meta) {
 		return {
-			pass: data,
+			pass: data.length !== undefined ? data.length === 0 : !data,
 			message: formatMessage(chalk`should ${not ? 'not' : ''} be {bold empty}`)
 		}
 	},
