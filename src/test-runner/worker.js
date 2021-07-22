@@ -109,10 +109,9 @@ async function handleRun ({test}) {
 
 	if (!(config.pauseOnError && (testError || hookError))) {
 		await teardownFixtures()
+		process.send(['done'])
 	}
-
 	// if (hookError) process.exit(0)
-	process.send(['done'])
 }
 
 const finishedGlobalHooks = []
