@@ -90,6 +90,7 @@ module.exports = class Supervisor extends EventEmitter {
 			}
 			worker.on('testEnd', (test, result) => {
 				test.result = result
+				if (test.retriesLeft && result.status === 'failed') return
 				this.emit('testEnd', test)
 			})
 			worker.on('hookEnd', (test, hook) => {
@@ -121,7 +122,12 @@ module.exports = class Supervisor extends EventEmitter {
 					this._queue.pop()?.(worker)
 				}
 			})
-			worker.on('done', () => {
+			worker.on('done', (test) => {
+				if (test.retriesLeft && test.result.status === 'failed') {
+					test.retriesLeft--
+					worker.run(test)
+					return
+				}
 				this._queue.pop()?.(worker) // pass the worker along to someone waiting
 				if (this._allTestsQueued && this._queue.length === 0) this.doneAndCleanup()
 			})

@@ -104,7 +104,7 @@ function Context (fixtures) {
 			return hooks
 		})(['beforeAll', 'beforeEach', 'afterAll', 'afterEach'])
 	}
-	const MODIFIERS = ['skip', 'only']
+	const MODIFIERS = ['skip', 'only', 'flaky']
 	for (const [key, fn] of Object.entries(MODIFIABLES)) {
 		context[key] = fn.bind(null, [])
 		for (const modifier of MODIFIERS) {
