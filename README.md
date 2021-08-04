@@ -2,7 +2,4 @@
 ### e2e browser testing based on playwright
 
 # Planned Features / TODOs
-
-- commands ?
-- debug printing steps
-- catch browser exceptions
+see [TODO.md](https://github.com/rashfael/tuiv/blob/dev/TODO.md)
