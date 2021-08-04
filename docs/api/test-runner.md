@@ -72,7 +72,7 @@ returns a new [FixtureBuilder](#FixtureBuilder) based on the current context. In
 Defines a test suite which can hold tests, hooks and other suites.
 Can be modified with the modifiers `only` and `skip`.
 
-### context\.it\[.only]\[.skip](title, testFunction)
+### context\.it\[.only]\[.skip]\[.flaky](title, testFunction)
 - `testFunction` *<async function(Fixtures)>*
 	- `Fixtures` *\<destructured object\>* fixtures used by this test. Must be a [destructured](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) object.
 

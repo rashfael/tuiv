@@ -28,7 +28,8 @@ module.exports = {
 					{text: 'Test Runner', link: '/api/test-runner'},
 					{text: 'Built-in Fixtures', link: '/api/fixtures'},
 					{text: 'Commands', link: '/api/commands'},
-					{text: 'Assertions', link: '/api/assertions'}
+					{text: 'Assertions', link: '/api/assertions'},
+					{text: 'Test Runner Lifecycle', link: '/api/lifecycle'},
 				]}
 			]
 		}
