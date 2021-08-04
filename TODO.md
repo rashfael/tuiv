@@ -11,8 +11,3 @@
 - hook naming https://mochajs.org/#describing-hooks
 
 - handle cli termination
-
-# features
-retries asserts
-
-patched folio workerRunner.ts _reportDoneAndStop `if (this._isStopped || this._failedTestId || this._fatalError)`

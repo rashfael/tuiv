@@ -1,5 +1,5 @@
 # tuiv
-### e2e browser testing based on playwright and folio
+### e2e browser testing based on playwright
 
 # Planned Features / TODOs
 

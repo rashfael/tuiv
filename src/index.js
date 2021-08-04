@@ -1,4 +1,3 @@
-// const { folio: baseFolio } = require('./playwright-test')
 const { Context } = require('./test-runner/context')
 const wrap = require('./wrap')
 const run = require('./run')

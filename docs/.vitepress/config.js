@@ -1,6 +1,6 @@
 module.exports = {
 	title: 'tuiv',
-	description: 'e2e browser testing based on playwright and folio',
+	description: 'e2e browser testing based on playwright',
 	markdown: {
 		breaks: true,
 		linkify: false
