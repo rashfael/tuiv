@@ -30,6 +30,8 @@ module.exports = {
 					{text: 'Commands', link: '/api/commands'},
 					{text: 'Assertions', link: '/api/assertions'},
 					{text: 'Test Runner Lifecycle', link: '/api/lifecycle'},
+					{text: 'CLI', link: '/api/cli'},
+					{text: 'Configuration', link: '/api/configuration'},
 				]}
 			]
 		}

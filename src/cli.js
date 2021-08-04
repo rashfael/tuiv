@@ -1,11 +1,14 @@
 #!/usr/bin/env node
+const packageJSON = require('../package.json')
 const commander = require('commander')
 const run = require('./run')
 
 process.noDeprecation = true // HACK shut up playwright deprecation for now https://github.com/microsoft/playwright/issues/6026
 
 const program = new commander.Command()
-program.version('0.0.1')
+program
+	.version(packageJSON.version)
+	.name('tuiv')
 
 program
 	.command('run <tests...>')
