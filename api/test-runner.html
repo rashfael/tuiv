@@ -6,12 +6,12 @@
     <title>
       Test Runner API | tuiv
     </title>
-    <meta name="description" content="e2e browser testing based on playwright and folio">
+    <meta name="description" content="e2e browser testing based on playwright">
     <link rel="stylesheet" href="/assets/style.56d02f33.css">
-    <link rel="modulepreload" href="/assets/Home.4fbcfbda.js">
-    <link rel="modulepreload" href="/assets/app.5358fee8.js">
-    <link rel="modulepreload" href="/assets/api_test-runner.md.02c4c68c.lean.js">
-    <link rel="modulepreload" href="/assets/app.5358fee8.js">
+    <link rel="modulepreload" href="/assets/Home.67021cca.js">
+    <link rel="modulepreload" href="/assets/app.82674dcb.js">
+    <link rel="modulepreload" href="/assets/api_test-runner.md.f82c166a.lean.js">
+    <link rel="modulepreload" href="/assets/app.82674dcb.js">
     
     
   </head>
@@ -60,7 +60,7 @@ fixtures<span class="token punctuation">.</span><span class="token function">myF
 
 <span class="token keyword">const</span> newContext <span class="token operator">=</span> fixtures<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre></div><h3 id="fixtures-fixture-name-fixturesetupfunction-options"><a class="header-anchor" href="#fixtures-fixture-name-fixturesetupfunction-options" aria-hidden="true">#</a> fixtures.<em>FIXTURE_NAME</em>(fixtureSetupFunction[, options])</h3><ul><li><code>fixtureSetupFunction</code> <em>&lt;async function(Fixtures, runCallback)&gt;</em><ul><li><code>Fixtures</code> <em>&lt;destructured object&gt;</em> other fixtures used by this fixture. Must be a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener noreferrer">destructured</a> object, just like fixture loading in test definitions.</li><li><code>runCallback</code> <em>&lt;async function(any)&gt;</em> await this callback with your fixture as the parameter after you have finished setting up your fixture. After this callback has returned, teardown your fixture if needed.</li></ul></li><li><code>options</code> <em>&lt;object&gt;</em><ul><li><code>scope</code> <em>&lt;&quot;test&quot;|&quot;worker&quot;&gt;</em> Specifies the scope of the fixture. <code>test</code>-scoped fixtures are setup and torn down before and after each test. <code>worker</code>-scoped fixtures are setup on first use and torn down when a worker has finished all tests. Defaults to <code>test</code>.</li></ul></li></ul><p>Adds a fixture with <em>FIXTURE_NAME</em> as name to the builder.<br> You can override fixtures by re-declaring the same <em>FIXTURE_NAME</em> and access the previous fixture by loading it as a dependent fixture.</p><h3 id="fixtures-build"><a class="header-anchor" href="#fixtures-build" aria-hidden="true">#</a> fixtures.build()</h3><p>Resolves all added fixtures. Throws an error if any cyclical dependencies are found or returns a new <a href="#Context">Context</a>.</p></div></div><footer class="page-footer" data-v-d36a7fda data-v-5a019cc9><div class="edit" data-v-5a019cc9><div class="edit-link" data-v-5a019cc9 data-v-fb0131f2><!----></div></div><div class="updated" data-v-5a019cc9><!----></div></footer><div class="next-and-prev-link" data-v-d36a7fda data-v-6683615c><div class="container" data-v-6683615c><div class="prev" data-v-6683615c><!----></div><div class="next" data-v-6683615c><a class="link" href="/api/fixtures" data-v-6683615c><span class="text" data-v-6683615c>Built-in Fixtures</span><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" class="icon icon-next" data-v-6683615c><path d="M19.9,12.4c0.1-0.2,0.1-0.5,0-0.8c-0.1-0.1-0.1-0.2-0.2-0.3l-7-7c-0.4-0.4-1-0.4-1.4,0s-0.4,1,0,1.4l5.3,5.3H5c-0.6,0-1,0.4-1,1s0.4,1,1,1h11.6l-5.3,5.3c-0.4,0.4-0.4,1,0,1.4c0.2,0.2,0.5,0.3,0.7,0.3s0.5-0.1,0.7-0.3l7-7C19.8,12.6,19.9,12.5,19.9,12.4z"></path></svg></a></div></div></div><!--[--><!--]--></div></main></div><!----><!--]--></div>
-    <script>__VP_HASH_MAP__ = JSON.parse("{\"index.md\":\"6af3089d\",\"api_assertions.md\":\"4493b102\",\"api_commands.md\":\"a8db9e7e\",\"api_fixtures.md\":\"b7054f57\",\"api_lifecycle.md\":\"1bdd946f\",\"api_test-runner.md\":\"02c4c68c\",\"guide_comparison.md\":\"f0d3097f\",\"guide_features.md\":\"b7e7deb6\",\"guide_getting-started.md\":\"e6b19538\",\"guide_migration-from-cypress.md\":\"e274a4b8\",\"guide_proxied-promise-chain.md\":\"afe201aa\"}")</script>
-    <script type="module" async src="/assets/app.5358fee8.js"></script>
+    <script>__VP_HASH_MAP__ = JSON.parse("{\"index.md\":\"2f5e2f3b\",\"api_assertions.md\":\"b1a1248f\",\"api_commands.md\":\"71f7412c\",\"api_fixtures.md\":\"922cdbd2\",\"api_lifecycle.md\":\"21514c35\",\"api_test-runner.md\":\"f82c166a\",\"guide_comparison.md\":\"0f7ab7ac\",\"guide_features.md\":\"e47f1924\",\"guide_getting-started.md\":\"4d7218bd\",\"guide_migration-from-cypress.md\":\"690a14c6\",\"guide_proxied-promise-chain.md\":\"5d757cfc\"}")</script>
+    <script type="module" async src="/assets/app.82674dcb.js"></script>
   </body>
 </html>
