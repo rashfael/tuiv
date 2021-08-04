@@ -1,10 +1,14 @@
 module.exports = {
 	title: 'tuiv',
 	description: 'e2e browser testing based on playwright and folio',
+	markdown: {
+		breaks: true,
+		linkify: false
+	},
 	themeConfig: {
 		nav: [
 			{text: 'Guide', link: '/guide/getting-started', activeMatch: '^/guide/'},
-			{text: 'API', link: '/api/commands', activeMatch: '^/api/'},
+			{text: 'API', link: '/api/test-runner', activeMatch: '^/api/'},
 			{text: 'Github', link: 'https://github.com/rashfael/tuiv'}
 		],
 		sidebar: {
