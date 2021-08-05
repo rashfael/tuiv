@@ -1,8 +1,0 @@
-- debug printing steps
-- catch browser exceptions
-- stay open on error: currently needs patch for folio
-- `should.be.visible` ?
-- on type, if element not focused, emit click, just like cypress?
-- hook naming https://mochajs.org/#describing-hooks
-- handle cli termination
-- screenshots/videos

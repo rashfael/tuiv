@@ -22,6 +22,3 @@ npm run docs:dev
 npm run docs:build
 npm rum docs:deploy # also builds
 ```
-
-# Planned Features / TODOs
-see [TODO.md](https://github.com/rashfael/tuiv/blob/dev/TODO.md)
