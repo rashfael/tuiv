@@ -1,7 +1,7 @@
 # tuiv
 ### e2e browser testing based on playwright
 
-[Getting Started](https://tuiv.rash.codes/guide/getting-started.html) | [API Documentation](https://tuiv.rash.codes/api/test-runner.html)
+[Getting Started](https://tuiv.rash.codes/guide/getting-started.html) • [API Documentation](https://tuiv.rash.codes/api/test-runner.html) • [Roadmap](https://github.com/rashfael/tuiv/projects/1)
 
 # Contributing
 
