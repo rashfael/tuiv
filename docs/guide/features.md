@@ -8,8 +8,8 @@ const { context } = require('tuiv')
 
 const fixtures = context.extend()
 
-fixtures.someFixture(async ({}, run) => {
-	await run('image something real here')
+fixtures.someFixture(async ({}, use) => {
+	await use('imagine something real here')
 })
 
 const { describe, it, beforeEach } = fixtures.build()
@@ -81,9 +81,9 @@ const fixtures = context.extend()
 To create fixtures you then declare them onto the fixture object with a function-based api.
 
 ```js
-fixtures.aFixture(async ({}, run) => {
+fixtures.aFixture(async ({}, use) => {
 	// setup here
-	await run(/* pass your fixture to tests here */)
+	await use(/* pass your fixture to tests here */)
 	// teardown here
 })
 ```
