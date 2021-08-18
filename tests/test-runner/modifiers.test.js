@@ -35,7 +35,7 @@ describe('modifiers', () => {
 		const results = await runVirtualTests({
 			'flaky.test.js': `
 				let flakeCounter = 0
-				describe.flaky('A suite', () => {
+				describe('A suite', () => {
 					it.flaky('should retry this test', async ({}) => {
 						flakeCounter++
 						if(flakeCounter < 3) {
