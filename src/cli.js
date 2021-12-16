@@ -3,8 +3,6 @@ const packageJSON = require('../package.json')
 const commander = require('commander')
 const run = require('./run')
 
-process.noDeprecation = true // HACK shut up playwright deprecation for now https://github.com/microsoft/playwright/issues/6026
-
 const program = new commander.Command()
 program
 	.version(packageJSON.version)

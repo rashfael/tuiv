@@ -1,8 +1,10 @@
 // extract some prototypes to `instanceof` against
-const { ElementHandle } = require('playwright/lib/client/elementHandle')
-const { Frame } = require('playwright/lib/client/frame')
-const { Page } = require('playwright/lib/client/page')
-const { JSHandle } = require('playwright/lib/client/jsHandle')
+const path = require('path')
+const playwrightPath = path.dirname(require.resolve('playwright-core/package.json'))
+const { ElementHandle } = require(path.join(playwrightPath, './lib/client/elementHandle'))
+const { Frame } = require(path.join(playwrightPath, './lib/client/frame'))
+const { Page } = require(path.join(playwrightPath, './lib/client/page'))
+const { JSHandle } = require(path.join(playwrightPath, './lib/client/jsHandle'))
 
 function typeOf (thing) {
 	// playwright types
