@@ -31,6 +31,7 @@ program
 			config,
 			reporters: options.reporters
 		})
+		if (config.pauseOnError && result.stats.failed > 0) return
 		process.exit(result.stats.failed === 0 ? 0 : 1)
 	})
 

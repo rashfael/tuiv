@@ -13,7 +13,7 @@ const HEADER = `
 `
 
 fixtures.runVirtualTests(async ({}, run) => {
-	await run(async (files) => {
+	await run(async (files, {params, timeout} = {params: []}) => {
 		await fs.rm(VIRTUAL_ENV, {recursive: true, force: true})
 		for (let [testpath, content] of Object.entries(files)) {
 			testpath = path.join(VIRTUAL_ENV, testpath)
@@ -23,6 +23,7 @@ fixtures.runVirtualTests(async ({}, run) => {
 		const tuivProcess = spawn('node', [
 			path.join(__dirname, '../../src/cli.js'),
 			'run',
+			...params,
 			`${VIRTUAL_ENV}/**/*.test.js`
 		], {
 			cwd: VIRTUAL_ENV
@@ -43,6 +44,11 @@ fixtures.runVirtualTests(async ({}, run) => {
 				console.log(String(data))
 			}
 		})
+		if (timeout) {
+			setTimeout(() => {
+				tuivProcess.kill('SIGKILL')
+			}, timeout)
+		}
 		const exitCode = await new Promise(resolve => tuivProcess.on('close', resolve))
 
 		return {

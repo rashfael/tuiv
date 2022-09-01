@@ -53,7 +53,6 @@ const activeFixtures = new Set()
 // if a beforeAll or afterAll fails, all tests on the same level or below should fail
 
 async function handleRun ({test}) {
-	// console.log('SHOULD RUN', test)
 	let suite
 	if (!(suite = loadedPaths[test.filepath])) {
 		suite = rootSuite.loadFile(test.filepath)
@@ -109,8 +108,8 @@ async function handleRun ({test}) {
 
 	if (!(config.pauseOnError && (testError || hookError))) {
 		await teardownFixtures()
-		process.send(['done'])
 	}
+	process.send(['done'])
 	// if (hookError) process.exit(0)
 }
 

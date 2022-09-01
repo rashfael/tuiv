@@ -123,6 +123,10 @@ module.exports = class Supervisor extends EventEmitter {
 				}
 			})
 			worker.on('done', (test) => {
+				if (config.pauseOnError && test.result.status === 'failed') {
+					this.emit('done')
+					return
+				}
 				if (test.retriesLeft && test.result.status === 'failed') {
 					test.retriesLeft--
 					worker.run(test)
