@@ -15,7 +15,8 @@ module.exports = function (fixtures) {
 	fixtures.newPage(async ({browser}, run) => {
 		await run(async function () {
 			const context = await browser.newContext({
-				viewport: {width: 1920, height: 1080}
+				viewport: {width: 1920, height: 1080},
+				...config.contextOptions
 			})
 			const page = await context.newPage()
 			for (const blockedGlob of config.blocklist || []) {
