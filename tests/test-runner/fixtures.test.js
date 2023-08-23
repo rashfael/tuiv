@@ -289,6 +289,25 @@ describe('Fixtures', () => {
 		})
 		assert.equal(results.exitCode, 0)
 	})
+
+	it('should handle fixture errors', async ({runVirtualTests}) => {
+		const results = await runVirtualTests({
+			'a.test.js': `
+				const fixtures = extend()
+				fixtures.aFixture(async ({}, run) => {
+					throw new Error('fixture error')
+					await run('a fixture')
+				})
+
+				;({ describe, it } = fixtures.build())
+
+				describe('A test suite with fixtures', () => {
+					it('should handle errors in fixtures', async ({aFixture}) => {})
+				})
+			`
+		})
+		assert.equal(results.exitCode, 1)
+	})
 	// should restart worker fixtures
 	// should run fixtures in *All hooks?
 })

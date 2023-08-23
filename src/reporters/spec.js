@@ -29,6 +29,10 @@ module.exports = function SpecReporter (runner, options) {
 	}
 
 	const formatError = function (test, error) {
+		// handle things that aren't a real Error
+		if (error.value != null) {
+			return `\n${indent('Error: ' + error.value, 1)}\n`
+		}
 		const stack = stackUtils.clean(error.stack, 4)
 		let callSite
 		const stackBeforeCallSite = []
@@ -41,8 +45,7 @@ module.exports = function SpecReporter (runner, options) {
 			stackBeforeCallSite.push(lineAtCallSite)
 		}
 		const sourcecode = fs.readFileSync(test.filepath, 'utf8')
-		console.log()
-		let output = ''
+		let output = '\n'
 		output += indent(`${error.name}: ${error.message}\n`, 1)
 		if (callSite) {
 			output += '\n' + indent(codeFrameColumns(sourcecode, {
