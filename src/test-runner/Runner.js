@@ -30,10 +30,11 @@ function generateExecutionPlan () {
 		for (const spec of suite.specs || []) {
 			if (spec.modifiers?.includes('skip')) continue
 			if (spec.modifiers?.includes('only')) plan.tests = []
-			let retries = 0
-			if (spec.modifiers?.includes('flaky')) retries = 2
-			// TODO cleanup recursive stuff and fn
 			const suites = suiteStack.slice().reverse()
+			let retries = 0
+			if (spec.modifiers?.includes('flaky') || suites.some(suite => suite.modifiers?.includes('flaky'))) retries = 2
+			// TODO cleanup recursive stuff and fn
+
 			const test = {
 				specId: getSpecId(suites, spec),
 				title: spec.title,

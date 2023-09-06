@@ -53,8 +53,23 @@ describe('modifiers', () => {
 	it('should fail flaky test after 3 tries', async ({runVirtualTests}) => {
 		const results = await runVirtualTests({
 			'flaky.test.js': `
-				describe.flaky('A suite', () => {
+				describe('A suite', () => {
 					it.flaky('should retry this test', async ({}) => {
+						console.log('FLAKE')
+						throw new Error('flaked')
+					})
+				})
+			`
+		})
+		assert(results.exitCode === 1)
+		assert.equal(results.output.split('FLAKE\n').length - 1, 3)
+	})
+
+	it('should fail flaky suite after 3 tries', async ({runVirtualTests}) => {
+		const results = await runVirtualTests({
+			'flaky.test.js': `
+				describe.flaky('A suite', () => {
+					it('should retry this test', async ({}) => {
 						console.log('FLAKE')
 						throw new Error('flaked')
 					})
