@@ -3,6 +3,7 @@ const { EventEmitter } = require('events')
 const difference = require('lodash/difference')
 const { rootSuite } = require('./context')
 const Supervisor = require('./Supervisor')
+const { config } = require('../config')
 
 // identify spec by position in suite tree starting at file level
 const getSpecId = function (suites, spec) {
@@ -34,7 +35,7 @@ function generateExecutionPlan () {
 			let retries = 0
 			if (spec.modifiers?.includes('flaky') || suites.some(suite => suite.modifiers?.includes('flaky'))) retries = 2
 			// TODO cleanup recursive stuff and fn
-
+			if (config.retries) retries = config.retries
 			const test = {
 				specId: getSpecId(suites, spec),
 				title: spec.title,

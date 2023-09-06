@@ -16,13 +16,14 @@ program
 	.option('-f, --headful', 'run in headful mode')
 	.option('-p, --pause-on-error', 'pause on error, leaves the headful browser open')
 	.option('-x, --exit-on-error', 'exits after encountering an error')
+	.option('--retries <number>', 'number of retries for each failing test', parseInt)
 	.action(async (testsOpt, options, command) => {
 		// const reporterOptions = {
 		// 	outputDir: path.resolve(process.cwd(), options.reportsDir)
 		// }
 		// set config from cli options
 		const config = {}
-		for (const option of ['headful', 'pauseOnError', 'exitOnError']) {
+		for (const option of ['headful', 'pauseOnError', 'exitOnError', 'retries']) {
 			if (options[option]) {
 				config[option] = options[option]
 			}
