@@ -81,7 +81,11 @@ function generateReport (rootSuite) {
 			suiteReport.specs.push({
 				title: spec.title,
 				modifiers: spec.modifiers,
-				result: spec.test?.result
+				maxRetries: spec.test?.retries,
+				result: {
+					retries: spec.test?.retries - spec.test?.retriesLeft,
+					...spec.test?.result
+				}
 			})
 		}
 		for (const subsuite of suite.suites || []) {
